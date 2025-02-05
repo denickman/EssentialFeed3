@@ -6,35 +6,8 @@
 //
 
 import XCTest
-import UIKit
 import EssentialFeed
-
-final class FeedViewController: UITableViewController {
-    
-    private var loader: FeedLoader?
-    
-    /// refresh control is an implementation detail, it would be better to hide it from tests
-    
-    convenience init(loader: FeedLoader) {
-        self.init()
-        self.loader = loader
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        refreshControl = UIRefreshControl()
-        refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
-        load()
-    }
-    
-    @objc private func load() {
-        refreshControl?.beginRefreshing()
-        loader?.load { [weak self] _ in
-            self?.refreshControl?.endRefreshing()
-        }
-    }
-    
-}
+import EssentialFeediOS
 
 final class FeedViewControllerTests: XCTestCase {
     
@@ -53,7 +26,7 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadCallCount, 3, "Expected yet another loading request once user initiates another reload")
     }
     
-    func test_loadingFeedIndicator_isVisibleWhileLoadingFeed()
+    func test_loadingFeedIndicator_isVisibleWhileLoadingFeed() {
         let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
@@ -80,7 +53,6 @@ final class FeedViewControllerTests: XCTestCase {
         trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, loader)
     }
-    
     
     // MARK: - LoaderSpy
     
