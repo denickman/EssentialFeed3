@@ -38,7 +38,6 @@ class FeedImageCell: UITableViewCell {
     }
     
     func fadeIn(_ image: UIImage?) {
-        
         feedImageView.image = image
         
         UIView.animate(
@@ -50,8 +49,11 @@ class FeedImageCell: UITableViewCell {
             }, completion: { completed in
                 if completed {
                     self.feedImageContainer.stopShimmering()
+                    
+                    self.feedImageView.layer.cornerRadius = 22
+                    self.feedImageView.layer.masksToBounds = true
                 }
             })
     }
 }
-    
+

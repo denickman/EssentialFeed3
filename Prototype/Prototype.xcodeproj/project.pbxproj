@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		85FCF6742D537A7900DAEB70 /* FeedImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FCF6732D537A7900DAEB70 /* FeedImageCell.swift */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		85EF497B2D53692D00BDEB02 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -31,7 +27,6 @@
 		85EF49642D53692A00BDEB02 /* Prototype.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Prototype.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		85EF497A2D53692D00BDEB02 /* PrototypeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrototypeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		85EF49842D53692D00BDEB02 /* PrototypeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrototypeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		85FCF6732D537A7900DAEB70 /* FeedImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -93,7 +88,6 @@
 		85EF495B2D53692A00BDEB02 = {
 			isa = PBXGroup;
 			children = (
-				85FCF6732D537A7900DAEB70 /* FeedImageCell.swift */,
 				85EF49662D53692A00BDEB02 /* Prototype */,
 				85EF497D2D53692D00BDEB02 /* PrototypeTests */,
 				85EF49872D53692D00BDEB02 /* PrototypeUITests */,
@@ -255,7 +249,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85FCF6742D537A7900DAEB70 /* FeedImageCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

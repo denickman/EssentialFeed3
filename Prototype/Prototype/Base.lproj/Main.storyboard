@@ -68,16 +68,16 @@
                                                     <rect key="frame" x="0.0" y="46" width="353" height="353"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qUH-6h-eaD">
-                                                            <rect key="frame" x="0.0" y="0.0" width="353" height="353"/>
+                                                            <rect key="frame" x="4" y="4" width="345" height="345"/>
                                                         </imageView>
                                                     </subviews>
                                                     <color key="backgroundColor" red="0.89019607840000003" green="0.89019607840000003" blue="0.89019607840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="bottom" secondItem="qUH-6h-eaD" secondAttribute="bottom" id="5aQ-je-BHS"/>
+                                                        <constraint firstAttribute="bottom" secondItem="qUH-6h-eaD" secondAttribute="bottom" constant="4" id="5aQ-je-BHS"/>
                                                         <constraint firstAttribute="width" secondItem="G37-pK-qAw" secondAttribute="height" multiplier="1:1" id="Vto-AK-dYB"/>
-                                                        <constraint firstItem="qUH-6h-eaD" firstAttribute="leading" secondItem="G37-pK-qAw" secondAttribute="leading" id="bKS-I5-yIG"/>
-                                                        <constraint firstAttribute="trailing" secondItem="qUH-6h-eaD" secondAttribute="trailing" id="kFS-cz-ZAH"/>
-                                                        <constraint firstItem="qUH-6h-eaD" firstAttribute="top" secondItem="G37-pK-qAw" secondAttribute="top" id="mLd-Hd-Zj9"/>
+                                                        <constraint firstItem="qUH-6h-eaD" firstAttribute="leading" secondItem="G37-pK-qAw" secondAttribute="leading" constant="4" id="bKS-I5-yIG"/>
+                                                        <constraint firstAttribute="trailing" secondItem="qUH-6h-eaD" secondAttribute="trailing" constant="4" id="kFS-cz-ZAH"/>
+                                                        <constraint firstItem="qUH-6h-eaD" firstAttribute="top" secondItem="G37-pK-qAw" secondAttribute="top" constant="4" id="mLd-Hd-Zj9"/>
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
