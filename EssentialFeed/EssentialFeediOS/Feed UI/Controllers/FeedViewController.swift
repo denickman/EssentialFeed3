@@ -8,26 +8,28 @@
 import UIKit
 import EssentialFeed
 
-public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
+public final class FeedViewController: UITableViewController {
     
     private var refreshController: FeedRefreshViewController?
     
     var tableModel = [FeedImageCellController]() {
         didSet { tableView.reloadData() }
     }
-
+    
     convenience init(refreshController: FeedRefreshViewController) {
         self.init()
         self.refreshController = refreshController
     }
-
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
-
         tableView.prefetchDataSource = self
         refreshControl = refreshController?.view
         refreshController?.refresh()
     }
+}
+
+extension FeedViewController: UITableViewDataSourcePrefetching {
 
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableModel.count

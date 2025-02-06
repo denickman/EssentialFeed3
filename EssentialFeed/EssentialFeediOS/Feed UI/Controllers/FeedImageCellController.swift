@@ -9,14 +9,21 @@ import UIKit
 import EssentialFeed
 
 final class FeedImageCellController {
+    
+    // MARK: - Properties
+    
     private var task: FeedImageDataLoaderTask?
     private let model: FeedImage
     private let imageLoader: FeedImageDataLoader
+    
+    // MARK: - Init
     
     init(model: FeedImage, imageLoader: FeedImageDataLoader) {
         self.model = model
         self.imageLoader = imageLoader
     }
+    
+    // MARK: - Methods
     
     func view() -> UITableViewCell {
         let cell = FeedImageCell()

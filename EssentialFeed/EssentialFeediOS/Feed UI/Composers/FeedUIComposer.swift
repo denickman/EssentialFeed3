@@ -15,6 +15,13 @@ public final class FeedUIComposer {
         let refreshController = FeedRefreshViewController(feedLoader: feedLoader)
         let feedController = FeedViewController(refreshController: refreshController)
         refreshController.onRefresh = adaptFeedToCellControllers(forwardingTo: feedController, loader: imageLoader)
+        /*
+         refreshController.onRefresh = { [imageLoader, weak feedController] feed in
+             feedController?.tableModel = feed.map { model in
+                 FeedImageCellController(model: model, imageLoader: imageLoader)
+             }
+         }
+         */
         return feedController
     }
 
