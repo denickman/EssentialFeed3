@@ -6,31 +6,33 @@
 //
 
 import UIKit
-import EssentialFeed
+
+/// Could not cast value of type 'EssentialFeediOS.FeedRefreshViewController' (0x101898d60) to 'NSObject' (0x1f052ca18).
+/// If you forget to inherit NSObject and your class is using #selector(refresh) they you are done)
 
 final class FeedRefreshViewController: NSObject {
+        
+    private(set) lazy var view = binded(UIRefreshControl())
+    private let viewModel: FeedViewModel
+
+    init(viewModel: FeedViewModel) {
+        self.viewModel = viewModel
+    }
+        
+    @objc func refresh() {
+        viewModel.loadFeed()
+    }
     
-    var onRefresh: (([FeedImage]) -> Void)?
-    
-    private(set) lazy var view: UIRefreshControl = {
-        let view = UIRefreshControl()
+    private func binded(_ view: UIRefreshControl) -> UIRefreshControl {
+        viewModel.onChange = { [weak self] viewModel in
+            if viewModel.isLoading {
+                self?.view.beginRefreshing()
+            } else {
+                self?.view.endRefreshing()
+            }
+        }
+        
         view.addTarget(self, action: #selector(refresh), for: .valueChanged)
         return view
-    }()
-
-    private let feedLoader: FeedLoader
-
-    init(feedLoader: FeedLoader) {
-        self.feedLoader = feedLoader
-    }
-
-    @objc func refresh() {
-        view.beginRefreshing()
-        feedLoader.load { [weak self] result in
-            if let feed = try? result.get() {
-                self?.onRefresh?(feed)
-            }
-            self?.view.endRefreshing()
-        }
     }
 }
