@@ -36,5 +36,4 @@ final class FeedViewModel {
             self?.onLoadingStateChange?(false)
         }
     }
-    
 }
