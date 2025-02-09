@@ -7,20 +7,24 @@
 
 import UIKit
 
+protocol FeedRefreshviewControllerDelegate {
+    func didRequestFeedRefresh()
+}
+
 /// Could not cast value of type 'EssentialFeediOS.FeedRefreshViewController' (0x101898d60) to 'NSObject' (0x1f052ca18).
 /// If you forget to inherit NSObject and your class is using #selector(refresh) they you are done)
 
 final class FeedRefreshViewController: NSObject, LoadingView {
 
     private(set) lazy var view = loadView()
-    private let loadFeed: () -> Void
+    private let delegate: FeedRefreshviewControllerDelegate
     
-    init(loadFeed: @escaping () -> Void) {
-        self.loadFeed = loadFeed
+    init(delegate: FeedRefreshviewControllerDelegate) {
+        self.delegate = delegate
     }
     
     @objc func refresh() {
-        loadFeed()
+        delegate.didRequestFeedRefresh()
     }
     
     private func loadView( ) -> UIRefreshControl {
