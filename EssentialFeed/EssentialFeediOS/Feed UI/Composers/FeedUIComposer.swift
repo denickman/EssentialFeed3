@@ -37,9 +37,8 @@ public final class FeedUIComposer {
     }
 }
 
-
 private final class FeedViewAdapter: FeedView {
-    
+
     private weak var controller: FeedViewController?
     private let imageLoader: FeedImageDataLoader
     
@@ -47,9 +46,9 @@ private final class FeedViewAdapter: FeedView {
         self.controller = controller
         self.imageLoader = imageLoader
     }
-    
-    func dislpay(feed: [FeedImage]) {
-        controller?.tableModel = feed.map { model in
+
+    func dislpay(_ viewModel: FeedViewModel) {
+        controller?.tableModel = viewModel.feed.map { model in
             FeedImageCellController(
                 viewModel: FeedImageViewModel(
                     model: model,
@@ -59,10 +58,8 @@ private final class FeedViewAdapter: FeedView {
             )
         }
     }
-
+    
 }
-
-
 
 private final class WeakRefVirtualProxy<T: AnyObject> {
     
@@ -74,7 +71,7 @@ private final class WeakRefVirtualProxy<T: AnyObject> {
 }
 
 extension WeakRefVirtualProxy: LoadingView where T: LoadingView {
-    func display(isLoading: Bool) {
-        object?.display(isLoading: isLoading)
+    func display(_ viewModel: FeedLoadingviewModel) {
+        object?.display(viewModel)
     }
 }
