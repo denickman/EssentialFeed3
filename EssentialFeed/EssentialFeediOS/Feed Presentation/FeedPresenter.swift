@@ -7,7 +7,9 @@
 
 import EssentialFeed
 
+
 struct FeedLoadingviewModel {
+    /// it only holds the necessary data, no behaviors
     var isLoading: Bool
 }
 
@@ -16,6 +18,7 @@ protocol LoadingView {
 }
 
 struct FeedViewModel {
+    /// it only holds the necessary data, no behaviors
     var feed: [FeedImage]
 }
 
