@@ -13,7 +13,7 @@ protocol LoadingView {
 }
 
 protocol FeedView {
-    func dislpay(_ viewModel: FeedViewModel)
+    func display(_ viewModel: FeedViewModel)
 }
 
 final class FeedPresenter {
@@ -35,7 +35,7 @@ final class FeedPresenter {
     }
     
     func didFinishLoadingFeed(with feed: [FeedImage]) {
-        feedView.dislpay(.init(feed: feed))
+        feedView.display(.init(feed: feed))
         loadingView.display(.init(isLoading: false))
     }
     
