@@ -77,6 +77,9 @@
                                                             <state key="normal" title="↻">
                                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             </state>
+                                                            <connections>
+                                                                <action selector="retryButtonTapped" destination="vGj-8S-KNz" eventType="touchUpInside" id="PU5-TZ-Hcg"/>
+                                                            </connections>
                                                         </button>
                                                     </subviews>
                                                     <color key="backgroundColor" red="0.89019607840000003" green="0.89019607840000003" blue="0.89019607840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -118,6 +121,14 @@
                                         <constraint firstAttribute="trailingMargin" secondItem="8xF-EK-c8n" secondAttribute="trailing" id="nqO-qZ-9es"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="descriptionLabel" destination="uSE-4V-Uly" id="K2W-Ra-ROQ"/>
+                                    <outlet property="feedImageContainer" destination="yzx-CJ-xyZ" id="0FF-wf-CBe"/>
+                                    <outlet property="feedImageRetryButton" destination="tCs-x5-D3u" id="vPk-C9-mh9"/>
+                                    <outlet property="feedImageView" destination="Xun-sB-yaE" id="MoE-lt-yku"/>
+                                    <outlet property="locationContainer" destination="gby-ik-Uuf" id="m1h-LP-sRb"/>
+                                    <outlet property="locationLabel" destination="2bW-ss-F6n" id="oBU-ny-xdD"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
