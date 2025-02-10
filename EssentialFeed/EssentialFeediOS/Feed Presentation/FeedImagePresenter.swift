@@ -7,18 +7,24 @@
 import Foundation
 import EssentialFeed
 
+/*
+ Если бы мы использовали замыкание (closure) вместо делегата, презентер стал бы ответственным за две вещи:
+ (1) обработку данных
+ (2) обновление UI
+ Это нарушает SRP и делает код менее гибким.
+ */
+
 protocol FeedImageView {
     associatedtype Image
-
     func display(_ model: FeedImageViewModel<Image>)
 }
 
 final class FeedImagePresenter<View: FeedImageView, Image> where View.Image == Image {
-    private let view: View
+    private let view: View // <— сильная ссылка на view
     private let imageTransformer: (Data) -> Image?
 
     internal init(view: View, imageTransformer: @escaping (Data) -> Image?) {
-        self.view = view
+        self.view = view // <— сильная ссылка может привести к retain cycle
         self.imageTransformer = imageTransformer
     }
 

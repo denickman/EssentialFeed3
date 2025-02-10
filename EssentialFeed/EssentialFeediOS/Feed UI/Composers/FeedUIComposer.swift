@@ -71,6 +71,13 @@ extension WeakRefVirtualProxy: FeedImageView where T: FeedImageView, T.Image == 
     }
 }
 
+/*
+ Дополнительный слой адаптеров помогает разделить обязанности:
+ Презентер (FeedImagePresenter) — отвечает за преобразование данных в модель для представления (ViewModel).
+ Адаптер (WeakRefVirtualProxy) — отвечает за передачу данных во View.
+ View (UIViewController) — отвечает за отображение данных.
+ */
+
 private final class FeedLoaderPresentationAdapter {
     
     private let feedLoader: FeedLoader
