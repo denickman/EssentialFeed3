@@ -242,10 +242,34 @@ final class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.cancelledImageURLs, [image0.url, image1.url], "Expected second cancelled image URL request once second image is not near visible anymore")
     }
     
-    /// if a controller creates a cell and starts loading an image but this cell goes off the screen before the image
-    /// completes, another ctrl will reuse the same cell instance, and if the first ctrl does not release the cell when that image
-    /// load completes the first ctrl will update the cell with the loaded image even thow cell represents another model and belonngs
-    /// to another controller
+    /*
+     Release cell reference on prepareForReuse as a fix for iOS 15+ cell lifecycle changes.
+     
+     On iOS 15+, for performance reasons, the table view data source may create cells ahead of time using the cellForRow method. So the cell may be created but never go through the whole willDisplayCell/didEndDisplaying lifecycle callbacks as it may never be displayed.
+     
+     However, we start loading the cell image on cellForRow and only cancel the request on didEndDisplaying. In such cases, there can be a race condition when reusing a cell that was never displayed because the request would carry on and potentially load the wrong image at the wrong index path.
+     */
+    func test_feedImageView_doesNotShowDataFromPreviousRequestWhenCellIsReused() throws {
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        loader.completeFeedLoading(with: [makeImage(), makeImage()])
+        
+        let view0 = try XCTUnwrap(sut.simulateFeedImageViewVisible(at: 0))
+        view0.prepareForReuse()
+        
+        let imageData0 = UIImage.make(withColor: .red).pngData()!
+        loader.completeImageLoading(with: imageData0, at: 0)
+        
+        XCTAssertEqual(view0.renderedImage, .none, "Expected no image state change for reused view once image loading completes successfully")
+    }
+    
+    /*
+     if a controller creates a cell and starts loading an image but this cell goes off the screen before the image
+     completes, another ctrl will reuse the same cell instance, and if the first ctrl does not release the cell when that image
+     load completes the first ctrl will update the cell with the loaded image even thow cell represents another model and belonngs
+     to another controller
+     */
     func test_feedImageView_doesNotRenderLoadedImageWhenNotVisibleAnymore() {
         let (sut, loader) = makeSUT()
         sut.loadViewIfNeeded()

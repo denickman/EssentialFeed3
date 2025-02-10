@@ -44,10 +44,14 @@ final class FeedImageCellController: FeedImageView {
         cell?.descriptionLabel.text = viewModel.description
         
         cell?.feedImageView.setImageAnimated(viewModel.image)
-
+        
         cell?.feedImageContainer.isShimmering = viewModel.isLoading
         cell?.feedImageRetryButton.isHidden = !viewModel.shouldRetry
         cell?.onRetry = delegate.didRequestImage
+        
+        cell?.onReuse = { [weak self] in
+            self?.releaseCellForReuse()
+        }
     }
     
     /*
@@ -67,7 +71,13 @@ final class FeedImageCellController: FeedImageView {
      Это может привести к ошибкам, когда запросы на изображения для ячеек, которые не отображаются, не отменяются вовремя, и при повторном использовании ячейки может загрузиться неправильное изображение для неправильного индекса.
      Таким образом, на iOS 15+ необходимо учитывать эти изменения в жизненном цикле ячеек, чтобы избежать проблем с загрузкой данных для повторно используемых ячеек.
      */
+    
+    /*
+     Ensure previous cells' prepareForReuse doesn't affect new cells by removing the onReuse closure reference when releasing the cell for reuse.
+     Every time we update the table view state, existing cells can be reused for different index paths, where they'll be managed by different cell controllers - so we need to remove all references to the previous cell controllers when releasing the cell for reuse. Since the `onReuse` closure references the cell controller via `self`, we need to set `onReuse` to `nil` when releasing the cell for reuse by another cell controller. This way, we ensure there are no references to the cell controller so there will be no side effects.
+     */
     func releaseCellForReuse() {
+        cell?.onReuse = nil
         cell = nil
     }
 }
