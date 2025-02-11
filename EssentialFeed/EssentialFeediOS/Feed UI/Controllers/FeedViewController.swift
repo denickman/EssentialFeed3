@@ -13,6 +13,8 @@ protocol FeedViewControllerDelegate {
 
 public final class FeedViewController: UITableViewController {
     
+    @IBOutlet private(set) public var errorView: ErrorView?
+    
     var delegate: FeedViewControllerDelegate?
     
     var tableModel = [FeedImageCellController]() {
@@ -63,14 +65,14 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
 }
 
 
-extension FeedViewController: LoadingView {
+extension FeedViewController: FeedLoadingView {
     func display(_ viewModel: FeedLoadingViewModel) {
-        if viewModel.isLoading {
-            refreshControl?.beginRefreshing()
-        } else {
-            refreshControl?.endRefreshing()
-        }
+        refreshControl?.update(isRefreshing: viewModel.isLoading)
     }
-    
-    
+}
+
+extension FeedViewController: FeedErrorView {
+    func display(_ viewModel: FeedErrorViewModel) {
+        errorView?.message = viewModel.message
+    }
 }
