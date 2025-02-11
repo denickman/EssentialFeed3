@@ -8,89 +8,11 @@
 import XCTest
 import EssentialFeed
 
-protocol FeedErrorView {
-    func display(_ viewModel: FeedErrorViewModel)
-}
-
-struct FeedErrorViewModel {
-    
-    let message: String?
-    
-    static var noError: FeedErrorViewModel {
-        FeedErrorViewModel(message: nil)
-    }
-    
-    static func error(message: String) -> FeedErrorViewModel {
-        FeedErrorViewModel(message: message)
-    }
-}
-
-
-protocol FeedLoadingView {
-    func display(_ viewModel: FeedLoadingViewModel)
-}
-
-struct FeedLoadingViewModel {
-    let isLoading: Bool
-}
-
-
-protocol FeedView {
-    func display(_ viewModel: FeedViewModel)
-}
-
-struct FeedViewModel {
-    var feed: [FeedImage]
-}
-
-
-final class FeedPresenter {
-    
-    static var title: String {
-        NSLocalizedString(
-            "FEED_VIEW_TITLE",
-            tableName: "Feed",
-            bundle: Bundle(for: FeedPresenter.self),
-            comment: "title for the feed view"
-        )
-    }
-    
-    private var feedLoadError: String {
-        NSLocalizedString(
-            "FEED_VIEW_CONNECTION_ERROR",
-            tableName: "Feed",
-            bundle: Bundle(for: FeedPresenter.self),
-            comment: "Error message displayed when we can't load the image feed from the server"
-        )
-    }
-    
-    private let feedView: FeedView
-    private let loadingView: FeedLoadingView
-    private let errorView: FeedErrorView
-    
-    init(feedView: FeedView, loadingView: FeedLoadingView, errorView: FeedErrorView) {
-        self.feedView = feedView
-        self.loadingView = loadingView
-        self.errorView = errorView
-    }
-    
-    func didStartLoadingFeed() {
-        errorView.display(.noError)
-        loadingView.display(.init(isLoading: true))
-    }
-    
-    func didFinishLoadingFeed(with feed: [FeedImage]) {
-        feedView.display(.init(feed: feed))
-        loadingView.display(.init(isLoading: false))
-    }
-    
-    func didFinishLoadingFeed(with error: Error) {
-        errorView.display(.error(message: feedLoadError))
-        loadingView.display(.init(isLoading: false))
-    }
-}
-
 class FeedPresenterTests: XCTestCase {
+    
+    func test_title_isLocalized() {
+        XCTAssertEqual(FeedPresenter.title, localized("FEED_VIEW_TITLE"))
+    }
     
     func test_init_doesNotSendMessagesToView() {
         let (_, view) = makeSUT()
