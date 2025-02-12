@@ -39,15 +39,21 @@ public final class FeedPresenter {
         )
     }
     
+    // MARK: - Properties
+    
     private let feedView: FeedView
     private let loadingView: FeedLoadingView
     private let errorView: FeedErrorView
+    
+    // MARK: - Init
     
     public init(feedView: FeedView, loadingView: FeedLoadingView, errorView: FeedErrorView) {
         self.feedView = feedView
         self.loadingView = loadingView
         self.errorView = errorView
     }
+    
+    // MARK: - Methods
     
     public func didStartLoadingFeed() {
         errorView.display(.noError)

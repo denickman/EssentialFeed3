@@ -24,7 +24,7 @@ public final class ErrorView: UIView {
     }
     
     private var isVisible: Bool {
-        return alpha > 0
+        alpha > 0
     }
     
     @IBAction private func hideMessageAnimated() {

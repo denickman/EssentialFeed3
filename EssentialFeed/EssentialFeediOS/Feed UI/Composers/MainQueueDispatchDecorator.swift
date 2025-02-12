@@ -8,6 +8,12 @@
 import Foundation
 import EssentialFeed
 
+/*
+ ✔ MainQueueDispatchDecorator — это декоратор, потому что он добавляет поведение без изменения оригинального объекта.
+ ✔ Он перехватывает completion и выполняет его на главном потоке.
+ ✔ Используется там, где асинхронный код возвращает данные в фоновом потоке, но UI должен обновляться в главном.
+ */
+
 final class MainQueueDispatchDecorator<T> {
     private let decoratee: T
 

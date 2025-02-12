@@ -327,13 +327,13 @@
 		8567EEC02D5B4DEA00354E25 /* Feed Presentation */ = {
 			isa = PBXGroup;
 			children = (
-				8567ECF12D5A50AB00354E25 /* FeedImageViewModel.swift */,
-				8567ECF02D5A50AB00354E25 /* FeedImagePresenter.swift */,
-				8567EEBB2D5B4BF300354E25 /* Feed.strings */,
 				8567EEC12D5B4DFC00354E25 /* FeedPresenter.swift */,
+				8567ECF02D5A50AB00354E25 /* FeedImagePresenter.swift */,
+				8567ECF12D5A50AB00354E25 /* FeedImageViewModel.swift */,
 				8567EEC82D5B4F0200354E25 /* FeedViewModel.swift */,
 				8567EEC62D5B4EE300354E25 /* FeedLoadingViewModel.swift */,
 				8567EEC42D5B4ED700354E25 /* FeedErrorViewModel.swift */,
+				8567EEBB2D5B4BF300354E25 /* Feed.strings */,
 			);
 			path = "Feed Presentation";
 			sourceTree = "<group>";
