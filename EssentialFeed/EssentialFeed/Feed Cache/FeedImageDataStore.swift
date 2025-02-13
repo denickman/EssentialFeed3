@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// FeedImageDataStore is an abstraction to hide infrastructure details (e.g. coredata) from its client (LocalFeedImageDataLoader)
+
 public protocol FeedImageDataStore {
     typealias RetrievalResult = Swift.Result<Data?, Error>
     typealias InsertionResult = Swift.Result<Void, Error>

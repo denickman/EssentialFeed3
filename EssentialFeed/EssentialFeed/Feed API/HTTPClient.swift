@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// HTTPClientTask относится к сетевому уровню (работает с HTTPClient).
+/// 
 public protocol HTTPClientTask {
     func cancel()
 }

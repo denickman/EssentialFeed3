@@ -7,6 +7,7 @@
 
 import Foundation
 
+// FeedImageDataLoaderTask относится к уровню загрузки изображений (работает с FeedImageDataLoader).
 public protocol FeedImageDataLoaderTask {
     func cancel()
 }

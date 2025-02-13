@@ -8,7 +8,6 @@
 import Foundation
 
 public struct CachedFeed {
-    
     public let feed: [LocalFeedImage]
     public let timestamp: Date
     
@@ -18,7 +17,8 @@ public struct CachedFeed {
     }
 }
 
-// (abstraction)
+/// FeedStore protocol is an abstraction to hide infrastructure details (e.g. CoreData) from its client (LocalFeedLoader)
+
 public protocol FeedStore {
     
     typealias DeletionResult = Result<Void, Error>
