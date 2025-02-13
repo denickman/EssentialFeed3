@@ -19,7 +19,7 @@ public protocol FeedImageView {
 }
 
 public final class FeedImagePresenter<View: FeedImageView, Image> where View.Image == Image {
-        
+    
     private let view: View // <— сильная ссылка на view
     private let imageTransformer: (Data) -> Image?
     
@@ -42,7 +42,7 @@ public final class FeedImagePresenter<View: FeedImageView, Image> where View.Ima
     
     public func didFinishLoadingImageData(with data: Data, for model: FeedImage) {
         let image = imageTransformer(data)
-
+        
         view.display(
             FeedImageViewModel(
                 description: model.description,
