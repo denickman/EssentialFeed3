@@ -32,17 +32,38 @@ jobs:
           echo ">> current version"
           xcodebuild -version
 
-      - name: Build and Test macOS
+      - name: Test MacOS
         run: |
 
           echo "Now Current directory is:"
           pwd
           ls -la
+          cd EssentialFeed
+          echo "Now Current directory is:"
+          ls -la
+
 
           xcodebuild clean build test \
           -project EssentialFeed.xcodeproj \
-          -scheme "CI" \
+          -scheme "CI_macOS" \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           -sdk macosx \
-          -destination "platform=macOS"
+          -destination "platform=macOS" \
+          ONLY_ACTIVE_ARCH=YES
+
+      - name: Test Workspace
+        run: |
+
+          echo "Now Current directory is:"
+          cd EssentialFeed
+          pwd
+          ls -la
+
+          xcodebuild clean build test \
+          -workspace EssentialApp.xcworkspace \
+          -scheme "CI_iOS" \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          -sdk iphonesimulator \
+          -destination "platform=iOS Simulator,name=iPhone 15,OS=18.2"
