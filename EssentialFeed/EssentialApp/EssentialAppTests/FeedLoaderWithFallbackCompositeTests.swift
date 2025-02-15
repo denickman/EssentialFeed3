@@ -11,7 +11,7 @@ import EssentialApp
 
 // test loading form remote at first, then use cache
 
-final class FeedLoaderWithFallbackCompositeTests: XCTestCase {
+final class FeedLoaderWithFallbackCompositeTests: XCTestCase, FeedLoaderTestCase {
     
     // no fail
     func test_load_deliversPrimaryFeedOnPrimaryLoaderSuccess() {
@@ -38,7 +38,6 @@ final class FeedLoaderWithFallbackCompositeTests: XCTestCase {
     
     // MARK: - Helpers
     
-    
     private func makeSUT(
         primaryResult: FeedLoader.Result,
         fallbackResult: FeedLoader.Result,
@@ -55,46 +54,4 @@ final class FeedLoaderWithFallbackCompositeTests: XCTestCase {
         
         return sut
     }
-    
-    private func expect(
-        _ sut: FeedLoader,
-        toCompleteWith expectedResult: FeedLoader.Result,
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) {
-        let exp = expectation(description: "Wait for load completion")
-        
-        sut.load { receivedResult in
-            switch (expectedResult, receivedResult) {
-            case let (.success(expectedFeed), .success(receivedFeed)):
-                XCTAssertEqual(expectedFeed, receivedFeed, file: file, line: line)
-                
-            case (.failure, .failure):
-                break
-                
-            default:
-                XCTFail("Expected \(expectedResult), got \(receivedResult) instead", file: file, line: line)
-            }
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
-    }
-    
-    private func uniqueFeed() -> [FeedImage] {
-        [.init(id: UUID(), description: "any", location: "any", url: URL(string: "http://any-url.com")!)]
-    }
-    
-    private class LoaderStub: FeedLoader {
-        private let result: FeedLoader.Result
-        
-        init(result: FeedLoader.Result) {
-            self.result = result
-        }
-        
-        func load(completion: @escaping (FeedLoader.Result) -> Void) {
-            completion(result)
-        }
-    }
-    
 }
