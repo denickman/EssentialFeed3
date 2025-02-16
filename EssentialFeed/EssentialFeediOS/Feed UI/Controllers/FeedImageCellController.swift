@@ -50,6 +50,10 @@ final class FeedImageCellController: FeedImageView {
         cell?.feedImageRetryButton.isHidden = !viewModel.shouldRetry
         cell?.onRetry = delegate.didRequestImage
         
+        /// accessibilityIdentifier for EssentialAppUIAcceptanceTests
+        cell?.accessibilityIdentifier = "feed-image-cell"
+        cell?.feedImageView.accessibilityIdentifier = "feed-image-view"
+        
         cell?.onReuse = { [weak self] in
             self?.releaseCellForReuse()
         }
