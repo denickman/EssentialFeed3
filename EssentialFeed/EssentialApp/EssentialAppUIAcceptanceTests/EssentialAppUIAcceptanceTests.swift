@@ -11,7 +11,7 @@ final class EssentialAppUIAcceptanceTests: XCTestCase {
     
     func test_onLaunch_displaysRemoteFeedWhenCustomerHasConnectivity() {
         let app = XCUIApplication()
-        onlineApp.launchArguments = ["-reset"]
+        app.launchArguments = ["-reset"]
         app.launch()
         
         let feedCells = app.cells.matching(identifier: "feed-image-cell")
