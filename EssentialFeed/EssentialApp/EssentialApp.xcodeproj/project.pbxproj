@@ -46,6 +46,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8577212E2D62001600FB5A2D /* EssentialApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = EssentialApp.xctestplan; path = ../EssentialApp.xctestplan; sourceTree = "<group>"; };
 		8596EDDB2D5E1F2A00A17090 /* EssentialFeed.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = EssentialFeed.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8596EDDC2D5E1F2A00A17090 /* EssentialFeediOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = EssentialFeediOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8596F04D2D61B67300A17090 /* EssentialAppUIAcceptanceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialAppUIAcceptanceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,6 +124,7 @@
 		85D1167E2D5E1E4500CB76DD = {
 			isa = PBXGroup;
 			children = (
+				8577212E2D62001600FB5A2D /* EssentialApp.xctestplan */,
 				85D116892D5E1E4500CB76DD /* EssentialApp */,
 				85D116A02D5E1E4700CB76DD /* EssentialAppTests */,
 				8596F04E2D61B67300A17090 /* EssentialAppUIAcceptanceTests */,
