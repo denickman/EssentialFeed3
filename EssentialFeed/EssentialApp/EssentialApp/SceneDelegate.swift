@@ -45,24 +45,41 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func makeRemoteClient() -> HTTPClient {
-        return URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
+        switch UserDefaults.standard.string(forKey: "connectivity") {
+        case "offline":
+            return AlwaysFailingHTTPClient()
+        default:
+            return URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
+        }
+        
+        /*
+         func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+         guard let _ = (scene as? UIWindowScene) else { return }
+         
+         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
+         
+         let session = URLSession(configuration: .ephemeral)
+         let client = URLSessionHTTPClient(session: session)
+         
+         let feedLoader = RemoteFeedLoader(url: url, client: client)
+         let imageLoader = RemoteFeedImageDataLoader(client: client)
+         
+         let feedViewController = FeedUIComposer.feedComposedWith(feedLoader: feedLoader, imageLoader: imageLoader)
+         
+         window?.rootViewController = feedViewController
+         */
     }
-    
-    /*
-     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-     guard let _ = (scene as? UIWindowScene) else { return }
-     
-     let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
-     
-     let session = URLSession(configuration: .ephemeral)
-     let client = URLSessionHTTPClient(session: session)
-     
-     let feedLoader = RemoteFeedLoader(url: url, client: client)
-     let imageLoader = RemoteFeedImageDataLoader(client: client)
-     
-     let feedViewController = FeedUIComposer.feedComposedWith(feedLoader: feedLoader, imageLoader: imageLoader)
-     
-     window?.rootViewController = feedViewController
-     */
 }
 
+
+private class AlwaysFailingHTTPClient: HTTPClient {
+    
+    private class Task: HTTPClientTask {
+        func cancel() {}
+    }
+    
+    func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
+        completion(.failure(NSError.init(domain: "offline", code: 0)))
+        return Task()
+    }
+}
