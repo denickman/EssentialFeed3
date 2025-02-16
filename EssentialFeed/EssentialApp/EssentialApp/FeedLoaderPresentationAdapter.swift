@@ -6,6 +6,7 @@
 //
 
 import EssentialFeed
+import EssentialFeediOS
 
 /*
  Дополнительный слой адаптеров помогает разделить обязанности:

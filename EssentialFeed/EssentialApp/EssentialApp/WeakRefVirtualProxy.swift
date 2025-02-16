@@ -7,6 +7,7 @@
 
 import UIKit
 import EssentialFeed
+import EssentialFeediOS
 
 /*
  🔹 Оборачивает другой объект (object)

@@ -8,6 +8,8 @@
 
 import Foundation
 import EssentialFeed
+import EssentialFeediOS
+
 
 public class FeedImageDataLoaderWithFallbackComposite: FeedImageDataLoader {
     
