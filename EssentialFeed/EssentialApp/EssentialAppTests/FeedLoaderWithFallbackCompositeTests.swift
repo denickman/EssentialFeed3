@@ -9,7 +9,8 @@ import XCTest
 import EssentialFeed
 import EssentialApp
 
-// test loading form remote at first, then use cache
+/// this `FeedLoaderWithFallbackCompositeTests` will not suppose to be used anymore in future in favor of `FeedAcceptaceTests`,
+/// since we add `FeedAcceptaceTests` which allows us to test business logic more precisely
 
 final class FeedLoaderWithFallbackCompositeTests: XCTestCase, FeedLoaderTestCase {
     
