@@ -7,6 +7,7 @@
 
 import XCTest
 import EssentialFeed
+import EssentialFeedAPI
 
 class URLSessionHTTPClientTests: XCTestCase {
     
@@ -93,7 +94,6 @@ class URLSessionHTTPClientTests: XCTestCase {
         trackForMemoryLeaks(sut, file: file, line: line)
         return sut
     }
-    
     
     private func nonHTTPURLResponse() -> URLResponse {
         .init(url: anyURL(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
