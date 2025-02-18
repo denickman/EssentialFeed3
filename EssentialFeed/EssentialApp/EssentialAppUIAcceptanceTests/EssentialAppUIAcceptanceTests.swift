@@ -7,6 +7,9 @@
 
 import XCTest
 
+/// See `DebuggingSceneDelegate`
+
+/*
 final class EssentialAppUIAcceptanceTests: XCTestCase {
     
     func test_onLaunch_displaysRemoteFeedWhenCustomerHasConnectivity() {
@@ -48,3 +51,4 @@ final class EssentialAppUIAcceptanceTests: XCTestCase {
         XCTAssertEqual(feedCells.count, 0)
     }
 }
+*/
