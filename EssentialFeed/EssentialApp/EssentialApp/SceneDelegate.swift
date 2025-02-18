@@ -10,6 +10,10 @@ import EssentialFeed
 import EssentialFeediOS
 import CoreData
 
+/* path to info.plist after build has been created
+ ~/Library/Developer/Xcode/DerivedData/ТВОЙ_ПРОЕКТ/Build/Products/Debug-iphonesimulator/ТВОЙ_ПРОЕКТ.app/Info.plist
+*/
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
@@ -35,7 +39,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard let scene = (scene as? UIWindowScene) else { return }
+        /// when initial screen loads from main.storyboard it creates the window for you automatically
+        /// so without storyboard we need to create a window by our onw
+        window = UIWindow(windowScene: scene)
         configureWindow()
     }
     
@@ -58,6 +65,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     fallback: FeedImageDataLoaderCacheDecorator(
                         decoratee: remoteImageLoader,
                         cache: localImageLoader))))
+        
+        window?.makeKeyAndVisible()
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
