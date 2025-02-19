@@ -3,11 +3,11 @@ name: CI_macOS
 on:
   push:
     branches:
-      - main
+      - mainnnnnn
       #- feature/image-feed/cache-feed-use-case
 
-  # pull_request:
-  #    branches: [ main ]
+  pull_request:
+     branches: [ main ]
 
 jobs:
 
@@ -106,7 +106,7 @@ jobs:
           ls -la
 
           xcodebuild clean build test \
-          -project EssentialFeed.xcodeproj\
+          -project EssentialFeed.xcodeproj \
           -scheme "CI_macOS" \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \

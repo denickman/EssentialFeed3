@@ -8,7 +8,7 @@
 	<string>app-store-connect</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.yaremenko.denis.EssentialApp</key>
+		<key>com.yaremenko.denis.Essential</key>
 		<string>prod_profile</string>
 	</dict>
 	<key>signingCertificate</key>
