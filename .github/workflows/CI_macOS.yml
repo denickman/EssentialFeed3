@@ -1,4 +1,4 @@
-name: CI
+name: CI_macOS
 
 on:
   push:
@@ -6,16 +6,18 @@ on:
       - main
       #- feature/image-feed/cache-feed-use-case
 
+  # pull_request:
+  #    branches: [ main ]
+
 jobs:
 
   # Второе задание: Сборка и тестирование для macOS
   build-and-test-macos:
     runs-on: macos-latest
     # timeout-minutes: 10
-    concurrency:
-      group: "build-${{ github.ref }}"
-      cancel-in-progress: true
-
+    # concurrency:
+    #   group: "build-${{ github.ref }}"
+    #   cancel-in-progress: true
 
     steps:
       - uses: actions/checkout@v4
@@ -23,10 +25,10 @@ jobs:
       - name: Display Xcode version
         run: xcodebuild -version
 
-      - name: List available Xcode versions
-        run: |
-          xcode-select -p
-          ls /Applications | grep Xcode
+      # - name: List available Xcode versions
+      #   run: |
+      #     xcode-select -p
+      #     ls /Applications | grep Xcode
 
       - name: Select Xcode
         run: |
@@ -71,15 +73,15 @@ jobs:
       #     xcrun simctl list runtimes  # Проверяем, что симулятор 18.2 установлен и доступен
 
 
-      - name: Simulators
-        run: xcrun simctl list
-      #
-      - name: Runtimes
-        run: xcrun simctl list runtimes
-      #
-      - name: SDK
-        run: |
-          xcodebuild -showsdks
+      # - name: Simulators
+      #   run: xcrun simctl list
+      # #
+      # - name: Runtimes
+      #   run: xcrun simctl list runtimes
+      # #
+      # - name: SDK
+      #   run: |
+      #     xcodebuild -showsdks
 
       # - name: Boot Simulator
       #   run: |
@@ -95,7 +97,7 @@ jobs:
     # Здесь мы не добавляем новый симулятор, так как его нет в списке
 
 
-      - name: Test Workspace
+      - name: Build and Test
         run: |
 
           echo "Now Current directory is:"
@@ -104,9 +106,9 @@ jobs:
           ls -la
 
           xcodebuild clean build test \
-          -workspace EssentialApp.xcworkspace \
-          -scheme "CI_iOS" \
+          -project EssentialFeed.xcodeproj\
+          -scheme "CI_macOS" \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
-          -sdk iphonesimulator \
-          -destination "platform=iOS Simulator,name=iPhone 16,OS=18.1"
+          -sdk macosx \
+          -destination "platform=macOS" ONLY_ACTIVE_ARCH=YES

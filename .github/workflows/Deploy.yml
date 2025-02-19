@@ -1,0 +1,68 @@
+name: Deploy to App Store
+
+on:
+  push:
+    branches: [ mainn ]  # Убедись, что main — это правильная ветка
+
+jobs:
+  build-and-deploy:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install provisioning profiles
+        run: |
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.SECRET_KEY }}" --output prodprofile.mobileprovision .github/deployment/prod_profile.mobileprovision.gpg
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp prodprofile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Install certificates
+        run: |
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.SECRET_KEY }}" --output prod_certificate.p12 .github/deployment/prod_certificate.p12.gpg
+          security create-keychain -p "" build.keychain
+          security import prod_certificate.p12 -t agg -k ~/Library/Keychains/build.keychain -P "${{ secrets.CERTIFICATE_PASSWORD }}" -A
+          security list-keychains -s ~/Library/Keychains/build.keychain
+          security default-keychain -s ~/Library/Keychains/build.keychain
+          security unlock-keychain -p "" ~/Library/Keychains/build.keychain
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" ~/Library/Keychains/build.keychain
+
+      - name: Select latest Xcode
+        run: sudo xcode-select -switch /Applications/Xcode.app
+
+      - name: Increment Build Number
+        run: |
+          buildNumber=$((GITHUB_RUN_NUMBER + 1))
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" "EssentialApp/EssentialApp/Info.plist"
+
+      - name: Build and Archive
+        run: |
+          xcodebuild clean archive \
+          -sdk iphoneos \
+          -workspace EssentialApp.xcworkspace \
+          -configuration Release \
+          -scheme EssentialApp \
+          -derivedDataPath DerivedData \
+          -archivePath DerivedData/Archive/EssentialApp.xcarchive | tee xcodebuild.log
+
+      - name: Export .ipa
+        run: |
+          xcodebuild -exportArchive \
+          -archivePath DerivedData/Archive/EssentialApp.xcarchive \
+          -exportOptionsPlist .github/deployment/ExportOptions.plist \
+          -exportPath DerivedData/ipa | tee export.log
+
+      - name: Upload to App Store
+        run: |
+          xcrun altool --upload-app --type ios \
+          --file DerivedData/ipa/EssentialApp.ipa \
+          --username "${{ secrets.APPSTORE_USERNAME }}" \
+          --password "${{ secrets.APPSTORE_PASSWORD }}" --verbose | tee upload.log
+
+# gpg --output dev_certificate.p12.gpg --symmetric --cipher-algo AES256 development.p12
+# gpg --output prod_certificate.p12.gpg --symmetric --cipher-algo AES256 distribution.p12
+
+
+# gpg --output devprofile.mobileprovision.gpg --symmetric --cipher-algo AES256 devProfile.mobileprovision
+# gpg --output prodprofile.mobileprovision.gpg --symmetric --cipher-algo AES256 prodProfile.mobileprovision
