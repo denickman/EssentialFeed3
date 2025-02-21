@@ -5,8 +5,6 @@
 //  Created by Denis Yaremenko on 15.02.2025.
 //
 
-import Foundation
-import EssentialFeediOS
 import EssentialFeed
 
 public final class FeedLoaderCacheDecorator: FeedLoader {
@@ -49,7 +47,7 @@ public final class FeedLoaderCacheDecorator: FeedLoader {
 }
 
 // to clarify our intend we want to ignore the result
-private extension FeedCache {
+public extension FeedCache {
     func saveIgnoringResult(_ feed: [FeedImage]) {
         save(feed) { _ in }
     }
