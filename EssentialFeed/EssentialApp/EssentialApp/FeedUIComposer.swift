@@ -20,13 +20,13 @@ public final class FeedUIComposer {
     ) -> FeedViewController {
         
         let presentationAdapter = FeedLoaderPresentationAdapter(
-            feedLoader: { feedLoader().dispatchOnMain() })
+            feedLoader: { feedLoader().dispatchOnMainQueue() })
         
         let feedController = makeFeedViewController(delegate: presentationAdapter, title: FeedPresenter.title)
         
         let feedViewAdapter = FeedViewAdapter(
             controller: feedController,
-            imageLoader: { imageLoader($0).dispatchOnMain() }
+            imageLoader: { imageLoader($0).dispatchOnMainQueue() }
         )
         
         let feedPresenter = FeedPresenter(
