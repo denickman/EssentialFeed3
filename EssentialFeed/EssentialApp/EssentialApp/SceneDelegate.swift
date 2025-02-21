@@ -16,7 +16,13 @@ import Combine
 */
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    
     var window: UIWindow?
+    
+    private lazy var remoteURL = URL(string: "https://static1.squarespace.com/static/5891c5b8d1758ec68ef5dbc2/t/5db4155a4fbade21d17ecd28/1572083034355/essential_app_feed.json")!
+    
+    /// Since iOS 14, if we don't explicitly hold a reference to the RemoteFeedLoader instance, it'll be deallocated before it completes the operation
+    private lazy var remoteFeedLoader = RemoteFeedLoader(url: remoteURL, client: httpClient)
     
     private lazy var httpClient: HTTPClient = {
         URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
@@ -72,9 +78,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func makeRemoteFeedLoaderWithLocalFallback() -> FeedLoader.Publisher {
         
-        let remoteURL = URL(string: "https://static1.squarespace.com/static/5891c5b8d1758ec68ef5dbc2/t/5db4155a4fbade21d17ecd28/1572083034355/essential_app_feed.json")!
+     
         
-        let remoteFeedLoader = RemoteFeedLoader(url: remoteURL, client: httpClient)
         //        return Deferred { Future(remoteFeedLoader.load) }.eraseToAnyPublisher()
         return remoteFeedLoader
             .loadPublisher()
