@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - m
+      #- feature/image-feed/cache-feed-use-case
+
+jobs:
+
+  # Второе задание: Сборка и тестирование для macOS
+  build-and-test-macos:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Display Xcode version
+        run: xcodebuild -version
+
+      - name: List available Xcode versions
+        run: |
+          xcode-select -p
+          ls /Applications | grep Xcode
+
+      - name: Select Xcode
+        run: |
+          # sudo xcode-select -s /Applications/Xcode.app
+          sudo xcode-select -s /Applications/Xcode_16.1.app
+          echo ">> availale xcode versions"
+          xcode-select -p
+          echo ">> current version"
+          xcodebuild -version
+
+      - name: Test macOS
+        run: |
+
+          echo "Now Current directory is:"
+          pwd
+          ls -la
+
+          xcodebuild clean build test \
+          -project EssentialFeed.xcodeproj \
+          -scheme "CI_macOS" \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          -sdk macosx \
+          -destination "platform=macOS"
+
+      - name: Test iOS
+        run: |
+
+            echo "Now Current directory is:"
+            pwd
+            ls -la
+
+            echo "List of schemas"
+            xcodebuild -list -project EssentialFeed.xcodeproj
+
+            echo "check current schema"
+            ls -la EssentialFeed.xcodeproj/xcshareddata/xcschemes
+
+            xcodebuild clean build test \
+            -workspace EssentialApp.xcworkspace \
+            -scheme "CI_iOS" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=18.1"
+    # ONLY_ACTIVE_ARCH=YES

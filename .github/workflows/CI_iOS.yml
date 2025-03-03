@@ -1,17 +1,10 @@
 name: CI_iOS
 
 on:
-  push:
-    branches:
-      - mainnnnnnn
-      #- feature/image-feed/cache-feed-use-case
-
   pull_request:
-     branches: [ main ]
+    branches: [ main ]
 
 jobs:
-
-  # Второе задание: Сборка и тестирование для macOS
   build-and-test-macos:
     runs-on: macos-latest
     # timeout-minutes: 10
@@ -25,11 +18,6 @@ jobs:
       - name: Display Xcode version
         run: xcodebuild -version
 
-      # - name: List available Xcode versions
-      #   run: |
-      #     xcode-select -p
-      #     ls /Applications | grep Xcode
-
       - name: Select Xcode
         run: |
           # sudo xcode-select -s /Applications/Xcode.app
@@ -39,70 +27,10 @@ jobs:
           echo ">> current version"
           xcodebuild -version
 
-      # - name: Test MacOS
-      #   run: |
-      #
-      #     echo "Now Current directory is:"
-      #     pwd
-      #     ls -la
-      #     cd EssentialFeed
-      #     echo "Now Current directory is:"
-      #     ls -la
-      #
-      #     xcodebuild clean build test \
-      #     -project EssentialFeed.xcodeproj \
-      #     -scheme "CI_macOS" \
-      #     CODE_SIGN_IDENTITY="" \
-      #     CODE_SIGNING_REQUIRED=NO \
-      #     -sdk macosx \
-      #     -destination "platform=macOS" \
-      #     ONLY_ACTIVE_ARCH=YES
-
-
-        # install simulator manually
-      # - name: Install iOS 18.2 Simulator
-      #   run: |
-      #     sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-      #     xcodebuild -version  # Проверяем установленную версию Xcode
-      #     # Устанавливаем симулятор iOS 18.2
-      #     xcrun simctl list runtimes  # Просматриваем доступные версии симуляторов
-      #     xcrun simctl install --runtime "com.apple.CoreSimulator.SimRuntime.iOS-18-2"  # Устанавливаем iOS 18.2, если еще не установлен
-      #
-      # - name: Verify simulator installation
-      #   run: |
-      #     xcrun simctl list runtimes  # Проверяем, что симулятор 18.2 установлен и доступен
-
-
-      # - name: Simulators
-      #   run: xcrun simctl list
-      # #
-      # - name: Runtimes
-      #   run: xcrun simctl list runtimes
-      # #
-      # - name: SDK
-      #   run: |
-      #     xcodebuild -showsdks
-
-      # - name: Boot Simulator
-      #   run: |
-      #     xcrun simctl create "iPhoneX" "com.apple.CoreSimulator.SimDeviceType.iPhone-16" "com.apple.CoreSimulator.SimRuntime.iOS-18-1"
-      #     xcrun simctl boot "iPhoneX"
-
-      # - name: Boot Simulator
-      #   run: xcrun simctl boot "iPhone 15 Pro"
-      #
-      # - name: Shutdown Simulator
-      #   run: xcrun simctl shutdown "iPhone 15 Pro"
-
-    # Здесь мы не добавляем новый симулятор, так как его нет в списке
-
-
       - name: Test Workspace
         run: |
 
           echo "Now Current directory is:"
-          cd EssentialFeed
-          pwd
           ls -la
 
           xcodebuild clean build test \

@@ -1,8 +1,11 @@
+
 name: Deploy to App Store
+# gpg --symmetric --cipher-algo AES256 --output prod_profile.mobileprovision.gpg prod_profile.mobileprovision
+# gpg --symmetric --cipher-algo AES256 --output prod_cert.p12.gpg prod_cert.p12
 
 on:
   push:
-    branches: [ mainnnn ]  # Убедитесь, что main — это правильная ветка
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
@@ -14,20 +17,24 @@ jobs:
 
       - name: Install provisioning profiles
         run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.SECRET_KEY }}" --output prod_profile.mobileprovision .github/deployment/prod_profile.mobileprovision.gpg
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.SECRET }}" --output prod_profile.mobileprovision .github/deployment/prod_profile.mobileprovision.gpg
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp prod_profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
+          echo "check !!!!"
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ | grep prod_profile.mobileprovision
+          security cms -D -i prod_profile.mobileprovision | plutil -p -
+
       - name: Install certificates
         run: |
-          echo "decryption"
+          echo "GPG"
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.SECRET }}" --output prod_certificate.p12 .github/deployment/prod_cert.p12.gpg
+          # echo "SEC"
 
-          # Расшифровка prod_certificate.p12.gpg
-          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.SECRET_KEY }}" --output prod_certificate.p12 .github/deployment/prod_certificate.p12.gpg
           echo "decryption prod_certificate.p12.gpg OK"
 
           # Расшифровка dev_certificate.p12.gpg
-          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.SECRET_KEY }}" --output dev_certificate.p12 .github/deployment/dev_certificate.p12.gpg
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.SECRET }}" --output dev_certificate.p12 .github/deployment/dev_cert.p12.gpg
           echo "decryption dev_certificate.p12.gpg OK"
 
           # Создание ключницы
@@ -50,6 +57,10 @@ jobs:
           security unlock-keychain -p "" ~/Library/Keychains/build.keychain
           security set-key-partition-list -S apple-tool:,apple: -s -k "" ~/Library/Keychains/build.keychain
 
+
+          echo "check !!!!"
+          security find-identity -p codesigning
+
       - name: Select Xcode
         run: |
           sudo xcode-select -s /Applications/Xcode_16.1.app
@@ -63,7 +74,7 @@ jobs:
 
       - name: Increment Build Number with agvtool
         run: |
-            cd EssentialFeed/EssentialApp
+            cd EssentialApp
             ls -la
             agvtool new-version -all $((GITHUB_RUN_NUMBER + 1))
             echo "New build number set to: $((GITHUB_RUN_NUMBER + 1))"
@@ -72,12 +83,12 @@ jobs:
       - name: Clean Build
         run: |
             ls -la
-            xcodebuild clean -workspace EssentialFeed/EssentialApp.xcworkspace -scheme EssentialApp
+            xcodebuild clean -workspace EssentialApp.xcworkspace -scheme EssentialApp
 
       - name: Build and Archive
         run: |
-          cd EssentialFeed
-          echo "show directory"
+
+          pwd
           ls -la
 
           xcodebuild clean archive \
@@ -85,18 +96,21 @@ jobs:
             -workspace EssentialApp.xcworkspace \
             -configuration Release \
             -scheme EssentialApp \
-            -derivedDataPath /Users/runner/work/EssentialFeed3/EssentialFeed3/DerivedData \
-            -archivePath /Users/runner/work/EssentialFeed3/EssentialFeed3/DerivedData/Archive/EssentialApp.xcarchive | tee xcodebuild.log
+            -derivedDataPath /Users/runner/work/EFM/EFM/DerivedData \
+            -archivePath /Users/runner/work/EFM/EFM/DerivedData/Archive/EssentialApp.xcarchive | tee xcodebuild.log
 
-      - name: List Xcode projects
+      - name: List EssentialApp workspace Files
         run: |
-          cd EssentialFeed
+          ls -la
           xcodebuild -list -workspace EssentialApp.xcworkspace
 
       - name: Export .ipa
         run: |
+
+          ls -la
+
           xcodebuild -exportArchive \
-            -archivePath /Users/runner/work/EssentialFeed3/EssentialFeed3/DerivedData/Archive/EssentialApp.xcarchive \
+            -archivePath /Users/runner/work/EFM/EFM/DerivedData/Archive/EssentialApp.xcarchive \
             -exportOptionsPlist .github/deployment/ExportOptions.plist \
             -exportPath DerivedData/ipa | tee export.log
 
