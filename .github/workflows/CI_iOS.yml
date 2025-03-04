@@ -2,7 +2,7 @@ name: CI_iOS
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ m ]
 
 jobs:
   build-and-test-macos:

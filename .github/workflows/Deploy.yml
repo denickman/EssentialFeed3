@@ -5,7 +5,7 @@ name: Deploy to App Store
 
 on:
   push:
-    branches: [ main ]
+    branches: [ m ]
 
 jobs:
   build-and-deploy:

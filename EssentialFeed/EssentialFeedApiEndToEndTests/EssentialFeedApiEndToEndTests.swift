@@ -53,7 +53,7 @@ class EssentialFeedAPIEndToEndTests: XCTestCase {
         /// in order to prevent caching we using .ephemeral
         
         let client = URLSessionHTTPClient.init(session: URLSession(configuration: .ephemeral))
-        let loader = RemoteFeedLoader(url: feedTestServerURL, client: ephemeralClient())
+        let loader = RemoteLoader(url: feedTestServerURL, client: ephemeralClient(), mapper: FeedItemsMapper.map)
         trackForMemoryLeaks(client, file: file, line: line)
         trackForMemoryLeaks(loader, file: file, line: line)
         
