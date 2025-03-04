@@ -71,6 +71,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         localFeedLoader.validateCache { _ in }
     }
     
+    
     private func makeRemoteFeedLoaderWithLocalFallback() -> FeedLoader.Publisher {
         // Deferred { Future(remoteFeedLoader.load) }.eraseToAnyPublisher()
         remoteFeedLoader
