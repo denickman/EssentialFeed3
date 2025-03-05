@@ -7,17 +7,13 @@
 
 import Foundation
 
-public final class LoadResourcePresenter {
+public protocol ResourceView {
+    associatedtype ResourceViewModel
+    func display(_ viewModel: ResourceViewModel)
+}
+     
+public final class LoadResourcePresenter<Resource, View: ResourceView> {
 
-    public static var title: String {
-        NSLocalizedString(
-            "FEED_VIEW_TITLE",
-            tableName: "Feed",
-            bundle: Bundle(for: FeedPresenter.self),
-            comment: "title for the feed view"
-        )
-    }
-    
     public var feedLoadError: String {
         NSLocalizedString(
             "FEED_VIEW_CONNECTION_ERROR",
@@ -29,22 +25,31 @@ public final class LoadResourcePresenter {
     
     // MARK: - Properties
     
-    private let feedView: FeedView
+    public typealias Mapper = (Resource) -> View.ResourceViewModel
+    
+    private let resourceView: View
     private let loadingView: FeedLoadingView
     private let errorView: FeedErrorView
+    private let mapper: Mapper
     
     // MARK: - Init
     
-    public init(feedView: FeedView, loadingView: FeedLoadingView, errorView: FeedErrorView) {
-        self.feedView = feedView
+    public init(
+        resourceView: View,
+        loadingView: FeedLoadingView,
+        errorView: FeedErrorView,
+        mapper: @escaping Mapper
+    ) {
+        self.resourceView = resourceView
         self.loadingView = loadingView
         self.errorView = errorView
+        self.mapper = mapper
     }
     
     // MARK: - Methods
     
     // Void -> creates view model -> sends to the UI
-    public func didStartLoadingFeed() {
+    public func didStartLoading() {
         errorView.display(.noError)
         loadingView.display(.init(isLoading: true))
     }
@@ -52,8 +57,8 @@ public final class LoadResourcePresenter {
     // [FeedImage] -> creates view model -> sends to the UI
     // [ImageComment] -> creates view model -> sends to the UI
     // Resource -> ResourceViewModel -> sends to the UI
-    public func didFinishLoadingFeed(with feed: [FeedImage]) {
-        feedView.display(.init(feed: feed))
+    public func didFinishLoading(with resource: Resource) {
+        resourceView.display(mapper(resource))
         loadingView.display(.init(isLoading: false))
     }
     
