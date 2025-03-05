@@ -13,16 +13,11 @@ import Combine
 
 /* path to info.plist after build has been created
  ~/Library/Developer/Xcode/DerivedData/ТВОЙ_ПРОЕКТ/Build/Products/Debug-iphonesimulator/ТВОЙ_ПРОЕКТ.app/Info.plist
-*/
+ */
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    
-    private lazy var remoteURL = URL(string: "https://static1.squarespace.com/static/5891c5b8d1758ec68ef5dbc2/t/5db4155a4fbade21d17ecd28/1572083034355/essential_app_feed.json")!
-    
-    /// Since iOS 14, if we don't explicitly hold a reference to the RemoteFeedLoader instance, it'll be deallocated before it completes the operation
-    private lazy var remoteFeedLoader = RemoteLoader(url: remoteURL, client: httpClient, mapper: FeedItemsMapper.map)
     
     private lazy var httpClient: HTTPClient = {
         URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
@@ -76,9 +71,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //            .caching(to: localFeedLoader)
         //            .fallback(to: localFeedLoader.loadPublisher)
         
+        let remoteURL = URL(string: "https://static1.squarespace.com/static/5891c5b8d1758ec68ef5dbc2/t/5db4155a4fbade21d17ecd28/1572083034355/essential_app_feed.json")!
         
         /// Option 2
-        httpClient
+        return httpClient
             .getPublisher(url: remoteURL) // side effect
             .tryMap(FeedItemsMapper.map) // pure function
             .caching(to: localFeedLoader) // side effect
@@ -96,34 +92,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 remoteImageLoader
                     .loadImageDataPublisher(from: url)
                     .caching(to: localImageLoader, using: url)
-            } 
+            }
     }
 }
-
-
-extension RemoteLoader: FeedLoader where Resource == [FeedImage] {}
-
-    
-// Just for guide, no need this code to uncomment
-
-//public typealias RemoteImageCommentsLoader = RemoteLoader<[ImageComment]>
-//
-//public extension RemoteImageCommentsLoader {
-//    
-//    convenience init(url: URL, client: HTTPClient) {
-//        self.init(url: url, client: client, mapper: ImageCommentsMapper.map)
-//    }
-//}
-
-
-//public typealias RemoteFeedLoader = RemoteLoader<[FeedImage]>
-//
-//public extension RemoteFeedLoader {
-//    convenience init(url: URL, client: HTTPClient) {
-//        self.init(url: url, client: client, mapper: FeedItemsMapper.map)
-//    }
-//}
-    
 
 
 
