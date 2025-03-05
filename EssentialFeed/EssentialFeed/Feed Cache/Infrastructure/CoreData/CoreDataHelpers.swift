@@ -7,7 +7,6 @@
 
 import CoreData
 
-
 extension NSPersistentContainer {
     static func load(name: String, model: NSManagedObjectModel, url: URL) throws -> NSPersistentContainer {
         let description = NSPersistentStoreDescription(url: url)
