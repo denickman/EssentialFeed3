@@ -76,6 +76,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         /// Option 2
         return httpClient
             .getPublisher(url: remoteURL) // side effect
+            .delay(for: 2, scheduler: DispatchQueue.main)
             .tryMap(FeedItemsMapper.map) // pure function
             .caching(to: localFeedLoader) // side effect
             .fallback(to: localFeedLoader.loadPublisher)
