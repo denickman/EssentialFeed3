@@ -29,16 +29,16 @@ public final class LoadResourcePresenter<Resource, View: ResourceView> {
     public typealias Mapper = (Resource) -> View.ResourceViewModel
     
     private let resourceView: View
-    private let loadingView: FeedLoadingView
-    private let errorView: FeedErrorView
+    private let loadingView: ResourceLoadingView
+    private let errorView: ResourceErrorView
     private let mapper: Mapper
     
     // MARK: - Init
     
     public init(
         resourceView: View,
-        loadingView: FeedLoadingView,
-        errorView: FeedErrorView,
+        loadingView: ResourceLoadingView,
+        errorView: ResourceErrorView,
         mapper: @escaping Mapper
     ) {
         self.resourceView = resourceView

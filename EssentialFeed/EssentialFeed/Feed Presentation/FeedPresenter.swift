@@ -7,13 +7,6 @@
 
 import Foundation
 
-public protocol FeedErrorView {
-    func display(_ viewModel: FeedErrorViewModel)
-}
-
-public protocol FeedLoadingView {
-    func display(_ viewModel: FeedLoadingViewModel)
-}
 
 public protocol FeedView {
     func display(_ viewModel: FeedViewModel)
@@ -42,36 +35,35 @@ public final class FeedPresenter {
     // MARK: - Properties
     
     private let feedView: FeedView
-    private let loadingView: FeedLoadingView
-    private let errorView: FeedErrorView
+    private let loadingView: ResourceLoadingView
+    private let errorView: ResourceErrorView
     
     // MARK: - Init
     
-    public init(feedView: FeedView, loadingView: FeedLoadingView, errorView: FeedErrorView) {
+    public init(feedView: FeedView, loadingView: ResourceLoadingView, errorView: ResourceErrorView) {
         self.feedView = feedView
         self.loadingView = loadingView
         self.errorView = errorView
     }
     
     // MARK: - Methods
-    
-    // Void -> creates view model -> sends to the UI
+
     public func didStartLoadingFeed() {
         errorView.display(.noError)
         loadingView.display(.init(isLoading: true))
     }
     
-    // [FeedImage] -> creates view model -> sends to the UI
-    // [ImageComment] -> creates view model -> sends to the UI
-    // Resource -> ResourceViewModel -> sends to the UI
     public func didFinishLoadingFeed(with feed: [FeedImage]) {
-        feedView.display(.init(feed: feed))
+        feedView.display(Self.map(feed))
         loadingView.display(.init(isLoading: false))
     }
-    
-    // Error -> creates view model -> sends to the UI
+  
     public func didFinishLoadingFeed(with error: Error) {
         errorView.display(.error(message: feedLoadError))
         loadingView.display(.init(isLoading: false))
+    }
+    
+    public static func map(_ feed: [FeedImage]) -> FeedViewModel {
+        FeedViewModel(feed: feed)
     }
 }
