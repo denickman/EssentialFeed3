@@ -52,19 +52,23 @@ class EssentialFeedAPIEndToEndTests: XCTestCase {
         /// directory when running tests is /Users/{your-user-name}/Library/Caches/com.apple.dt.xctest.tool
         /// in order to prevent caching we using .ephemeral
         
-        let client = URLSessionHTTPClient.init(session: URLSession(configuration: .ephemeral))
-        let loader = RemoteLoader(url: feedTestServerURL, client: ephemeralClient(), mapper: FeedItemsMapper.map)
-        trackForMemoryLeaks(client, file: file, line: line)
-        trackForMemoryLeaks(loader, file: file, line: line)
+        let client = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
         
         let exp = expectation(description: "Wait for load completion")
         
         var receivedResult: FeedLoader.Result?
         
-        loader.load { result in
-            receivedResult = result
+        client.get(from: testServerURL) { result in
+            receivedResult = result.flatMap { (data, response) in
+                do {
+                    return .success(try FeedItemsMapper.map(data, from: response))
+                } catch {
+                    return .failure(error)
+                }
+            }
             exp.fulfill()
         }
+
         wait(for: [exp], timeout: 5.0)
         
         return receivedResult
