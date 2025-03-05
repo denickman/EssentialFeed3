@@ -34,12 +34,15 @@ final class LoadResourcePresenterTests: XCTestCase {
         XCTAssertEqual(view.messages, [.display(resource: "resource view model"), .display(isLoading: false)])
     }
     
-    func test_didFinishLoadingFeedWithError_displaysLocalizedErrorMessageAndStopsLoading() {
+    func test_didFinishLoadingWithError_displaysLocalizedErrorMessageAndStopsLoading() {
         let (sut, view) = makeSUT()
         
-        sut.didFinishLoadingFeed(with: anyNSError())
+        sut.didFinishLoading(with: anyNSError())
         
-        XCTAssertEqual(view.messages, [.display(errorMessage: localized("FEED_VIEW_CONNECTION_ERROR")), .display(isLoading: false)])
+        XCTAssertEqual(
+            view.messages,
+            [.display(errorMessage: localized("GENERIC_CONNECTION_ERROR")), .display(isLoading: false)]
+        )
     }
     
     // MARK: - Helpers
@@ -69,7 +72,7 @@ final class LoadResourcePresenterTests: XCTestCase {
     }
     
     private class ViewSpy: ResourceView, FeedLoadingView, FeedErrorView {
-
+        
         enum Message: Hashable {
             case display(errorMessage: String?)
             case display(isLoading: Bool)
@@ -83,11 +86,11 @@ final class LoadResourcePresenterTests: XCTestCase {
         func display(_ viewModel: FeedLoadingViewModel) {
             messages.insert(.display(isLoading: viewModel.isLoading))
         }
-
+        
         func display(_ viewModel: String) {
             messages.insert(.display(resource: viewModel))
         }
-  
+        
         func display(_ viewModel: FeedErrorViewModel) {
             messages.insert(.display(errorMessage: viewModel.message))
         }
