@@ -8,11 +8,7 @@
 import UIKit
 import EssentialFeed
 
-public protocol FeedViewControllerDelegate {
-    func didRequestFeedRefresh()
-}
-
-
+// every protocol with only one method could be replaced with a closure
 
 public protocol CellController {
     func view(in tableView: UITableView) -> UITableViewCell
@@ -21,14 +17,13 @@ public protocol CellController {
 }
 
 
-
-public final class FeedViewController: UITableViewController {
+public final class ListViewController: UITableViewController {
     
     @IBOutlet private(set) public var errorView: ErrorView?
     
     private var loadingControllers = [IndexPath: CellController]()
     
-    public var delegate: FeedViewControllerDelegate?
+    public var onRefresh: (()->Void)?
     
     private var tableModel = [CellController]() {
         didSet { tableView.reloadData() }
@@ -50,11 +45,11 @@ public final class FeedViewController: UITableViewController {
     }
     
     @IBAction private func refresh() {
-        delegate?.didRequestFeedRefresh()
+        onRefresh?()
     }
 }
 
-extension FeedViewController: UITableViewDataSourcePrefetching {
+extension ListViewController: UITableViewDataSourcePrefetching {
     
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableModel.count
@@ -96,13 +91,13 @@ extension FeedViewController: UITableViewDataSourcePrefetching {
     }
 }
 
-extension FeedViewController: ResourceLoadingView {
+extension ListViewController: ResourceLoadingView {
     public func display(_ viewModel: ResourceLoadingViewModel) {
         refreshControl?.update(isRefreshing: viewModel.isLoading)
     }
 }
 
-extension FeedViewController: ResourceErrorView {
+extension ListViewController: ResourceErrorView {
     public func display(_ viewModel: ResourceErrorViewModel) {
         errorView?.message = viewModel.message
     }
