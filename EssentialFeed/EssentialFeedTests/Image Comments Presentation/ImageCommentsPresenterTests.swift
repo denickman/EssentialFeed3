@@ -18,12 +18,21 @@ final class ImageCommentsPresenterTests: XCTestCase {
         // given
         let now = Date()
         let calendar = Calendar(identifier: .gregorian)
-        let locale = Locale(identifier: "en_US_POSIX") // pt_BR
-        
+        let locale = Locale(identifier: "en_US_POSIX") // pt_BR 
         
         let comments = [
-            ImageComment(id: UUID(), message: "a message", createdAt: now.adding(minutes: -5), username: "a username"),
-            ImageComment(id: UUID(), message: "another message", createdAt: now.adding(days: -1), username: "another username")
+            ImageComment(
+                id: UUID(),
+                message: "a message",
+                createdAt: now.adding(minutes: -5, calendar: calendar),
+                username: "a username"
+            ),
+            ImageComment(
+                id: UUID(),
+                message: "another message",
+                createdAt: now.adding(days: -1, calendar: calendar),
+                username: "another username"
+            )
         ]
         
         // when
