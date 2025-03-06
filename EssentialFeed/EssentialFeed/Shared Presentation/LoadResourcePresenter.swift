@@ -26,7 +26,7 @@ public final class LoadResourcePresenter<Resource, View: ResourceView> {
     
     // MARK: - Properties
     
-    public typealias Mapper = (Resource) -> View.ResourceViewModel
+    public typealias Mapper = (Resource) throws -> View.ResourceViewModel
     
     private let resourceView: View
     private let loadingView: ResourceLoadingView
@@ -59,8 +59,12 @@ public final class LoadResourcePresenter<Resource, View: ResourceView> {
     // [ImageComment] -> creates view model -> sends to the UI
     // Resource -> ResourceViewModel -> sends to the UI
     public func didFinishLoading(with resource: Resource) {
-        resourceView.display(mapper(resource))
-        loadingView.display(.init(isLoading: false))
+        do {
+            resourceView.display(try mapper(resource))
+            loadingView.display(.init(isLoading: false))
+        } catch {
+            didFinishLoading(with: error)
+        }
     }
     
     // Error -> creates view model -> sends to the UI

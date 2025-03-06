@@ -13,50 +13,67 @@ public protocol FeedImageCellControllerDelegate {
     func didCancelImageRequest()
 }
 
-public final class FeedImageCellController: FeedImageView {
+public final class FeedImageCellController: FeedImageView, ResourceView, ResourceLoadingView, ResourceErrorView {
     
-    private let delegate: FeedImageCellControllerDelegate
+    public typealias ResourceViewModel = UIImage
+    
+    // the only things that will change is <UIImage> that will come asyncronously from the backend
     private var cell: FeedImageCell?
+    private let delegate: FeedImageCellControllerDelegate
+    private let viewModel: FeedImageViewModel<UIImage> // never change
     
-   public init(delegate: FeedImageCellControllerDelegate) {
+    
+    public init(viewModel: FeedImageViewModel<UIImage>, delegate: FeedImageCellControllerDelegate) {
         self.delegate = delegate
+        self.viewModel = viewModel
     }
     
     // MARK: - Methods
     
-     func view(in tableView: UITableView) -> UITableViewCell {
+    func view(in tableView: UITableView) -> UITableViewCell {
         cell = tableView.dequeueReusableCell()
-        delegate.didRequestImage()
-        return cell!
-    }
-    
-     func preload() {
-        delegate.didRequestImage()
-    }
-    
-     func cancelLoad() {
-        releaseCellForReuse()
-        delegate.didCancelImageRequest()
-    }
-    
-    public func display(_ viewModel: FeedImageViewModel<UIImage>) {
+        
         cell?.locationContainer.isHidden = !viewModel.hasLocation
         cell?.locationLabel.text = viewModel.location
         cell?.descriptionLabel.text = viewModel.description
         
-        cell?.feedImageView.setImageAnimated(viewModel.image)
-        
-        cell?.feedImageContainer.isShimmering = viewModel.isLoading
-        cell?.feedImageRetryButton.isHidden = !viewModel.shouldRetry
+        delegate.didRequestImage()
+        return cell!
+    }
+    
+    func preload() {
+        delegate.didRequestImage()
+    }
+    
+    func cancelLoad() {
+        releaseCellForReuse()
+        delegate.didCancelImageRequest()
+    }
+    
+    /// in order to use shared logic we split into two `display` methods
+    /// splitting that unify all the states in one into multiple view model
+    public func display(_ viewModel: FeedImageViewModel<UIImage>) {
         cell?.onRetry = delegate.didRequestImage
+ 
+        cell?.onReuse = { [weak self] in
+            self?.releaseCellForReuse()
+        }
         
         /// accessibilityIdentifier for EssentialAppUIAcceptanceTests
         cell?.accessibilityIdentifier = "feed-image-cell"
         cell?.feedImageView.accessibilityIdentifier = "feed-image-view"
-        
-        cell?.onReuse = { [weak self] in
-            self?.releaseCellForReuse()
-        }
+    }
+    
+    public func display(_ viewModel: UIImage) {
+        cell?.feedImageView.setImageAnimated(viewModel)
+    }
+    
+    public func display(_ viewModel: ResourceLoadingViewModel) {
+        cell?.feedImageContainer.isShimmering = viewModel.isLoading
+    }
+    
+    public func display(_ viewModel: ResourceErrorViewModel) {
+        cell?.feedImageRetryButton.isHidden = viewModel.message == nil
     }
     
     /*
