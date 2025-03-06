@@ -13,17 +13,17 @@ public protocol FeedImageCellControllerDelegate {
     func didCancelImageRequest()
 }
 
-public final class FeedImageCellController: FeedImageView, ResourceView, ResourceLoadingView, ResourceErrorView {
+public final class FeedImageCellController: ResourceView, ResourceLoadingView, ResourceErrorView {
     
     public typealias ResourceViewModel = UIImage
     
     // the only things that will change is <UIImage> that will come asyncronously from the backend
     private var cell: FeedImageCell?
     private let delegate: FeedImageCellControllerDelegate
-    private let viewModel: FeedImageViewModel<UIImage> // never change
+    private let viewModel: FeedImageViewModel // never change
     
     
-    public init(viewModel: FeedImageViewModel<UIImage>, delegate: FeedImageCellControllerDelegate) {
+    public init(viewModel: FeedImageViewModel, delegate: FeedImageCellControllerDelegate) {
         self.delegate = delegate
         self.viewModel = viewModel
     }
@@ -42,7 +42,7 @@ public final class FeedImageCellController: FeedImageView, ResourceView, Resourc
             self?.releaseCellForReuse()
         }
         
-        delegate.didRequestImage()
+        delegate.didRequestImage() 
         
         /// accessibilityIdentifier for EssentialAppUIAcceptanceTests
         cell?.accessibilityIdentifier = "feed-image-cell"
@@ -59,14 +59,7 @@ public final class FeedImageCellController: FeedImageView, ResourceView, Resourc
         releaseCellForReuse()
         delegate.didCancelImageRequest()
     }
-    
 
-    public func display(_ viewModel: FeedImageViewModel<UIImage>) {
-      
-   
-    }
-    
-    
     /// in order to use shared logic we split into two `display` methods
     /// splitting that unify all the states in one into multiple view model
     ///
