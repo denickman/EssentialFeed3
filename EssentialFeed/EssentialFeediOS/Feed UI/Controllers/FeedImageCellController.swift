@@ -36,8 +36,18 @@ public final class FeedImageCellController: FeedImageView, ResourceView, Resourc
         cell?.locationContainer.isHidden = !viewModel.hasLocation
         cell?.locationLabel.text = viewModel.location
         cell?.descriptionLabel.text = viewModel.description
+        cell?.onRetry = delegate.didRequestImage
+ 
+        cell?.onReuse = { [weak self] in
+            self?.releaseCellForReuse()
+        }
         
         delegate.didRequestImage()
+        
+        /// accessibilityIdentifier for EssentialAppUIAcceptanceTests
+        cell?.accessibilityIdentifier = "feed-image-cell"
+        cell?.feedImageView.accessibilityIdentifier = "feed-image-view"
+
         return cell!
     }
     
@@ -50,20 +60,16 @@ public final class FeedImageCellController: FeedImageView, ResourceView, Resourc
         delegate.didCancelImageRequest()
     }
     
-    /// in order to use shared logic we split into two `display` methods
-    /// splitting that unify all the states in one into multiple view model
+
     public func display(_ viewModel: FeedImageViewModel<UIImage>) {
-        cell?.onRetry = delegate.didRequestImage
- 
-        cell?.onReuse = { [weak self] in
-            self?.releaseCellForReuse()
-        }
-        
-        /// accessibilityIdentifier for EssentialAppUIAcceptanceTests
-        cell?.accessibilityIdentifier = "feed-image-cell"
-        cell?.feedImageView.accessibilityIdentifier = "feed-image-view"
+      
+   
     }
     
+    
+    /// in order to use shared logic we split into two `display` methods
+    /// splitting that unify all the states in one into multiple view model
+    ///
     public func display(_ viewModel: UIImage) {
         cell?.feedImageView.setImageAnimated(viewModel)
     }

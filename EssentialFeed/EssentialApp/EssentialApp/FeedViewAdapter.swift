@@ -40,6 +40,12 @@ final class FeedViewAdapter: ResourceView {
                 loadingView: WeakRefVirtualProxy(view),
                 errorView: WeakRefVirtualProxy(view),
                 mapper: UIImage.tryMake
+//                mapper: { data in
+//                    guard let image = UIImage(data: data) else {
+//                        throw InvalidImageData()
+//                    }
+//                    return image
+//                }
             )
             
             return view
