@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 74;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -176,6 +176,14 @@
 			);
 			target = 8553BE762D4CA9C000F86251 /* EssentialFeedCacheIntegrationTests */;
 		};
+		858FE07E2D79BB3B002ECDBF /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				/Localized/ImageComments.strings,
+				ImageCommentsPresenter.swift,
+			);
+			target = 080EDEF021B6DA7E00813479 /* EssentialFeed */;
+		};
 		85A90AB92D5390F1006B468B /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -205,6 +213,7 @@
 		857D50102D3C1DA40040B83E /* EssentialFeedTests */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (85C2DB582D40DFDF003B4946 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 8553BE822D4CB94200F86251 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, 85A90AB92D5390F1006B468B /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = EssentialFeedTests; sourceTree = "<group>"; };
 		857D52862D40D4110040B83E /* EssentialFeedApiEndToEndTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EssentialFeedApiEndToEndTests; sourceTree = "<group>"; };
 		858FDCA72D786030002ECDBF /* 002. Image Comments Presentation */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "002. Image Comments Presentation"; sourceTree = "<group>"; };
+		858FE07B2D79BB27002ECDBF /* Image Comments Presentation */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (858FE07E2D79BB3B002ECDBF /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "Image Comments Presentation"; sourceTree = "<group>"; };
 		85FCF6802D53867B00DAEB70 /* EssentialFeediOS */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EssentialFeediOS; sourceTree = "<group>"; };
 		85FCF68A2D53867B00DAEB70 /* EssentialFeediOSTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EssentialFeediOSTests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -290,6 +299,7 @@
 		080EDEF321B6DA7E00813479 /* EssentialFeed */ = {
 			isa = PBXGroup;
 			children = (
+				858FE07B2D79BB27002ECDBF /* Image Comments Presentation */,
 				858FDCAF2D786744002ECDBF /* Shared Presentation */,
 				854DAD3C2D770ED500E6B6E3 /* Guides */,
 				854DAD912D7723CC00E6B6E3 /* Image Comments API */,
@@ -648,7 +658,6 @@
 				};
 			};
 			buildConfigurationList = 080EDEEB21B6DA7E00813479 /* Build configuration list for PBXProject "EssentialFeed" */;
-			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -658,6 +667,7 @@
 				el,
 			);
 			mainGroup = 080EDEE721B6DA7E00813479;
+			preferredProjectObjectVersion = 55;
 			productRefGroup = 080EDEF221B6DA7E00813479 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
