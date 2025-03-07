@@ -40,9 +40,13 @@ final class ListSnapshotTests: XCTestCase {
     }
     
     private func makeSUT() -> ListViewController {
-        let bundle = Bundle(for: ListViewController.self)
-        let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
-        let controller = storyboard.instantiateInitialViewController() as! ListViewController
+        // since we eliminate errorView from the storyboard, we do not need storyboard anymore
+//        let bundle = Bundle(for: ListViewController.self)
+//        let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
+//        let controller = storyboard.instantiateInitialViewController() as! ListViewController
+        
+        let controller = ListViewController()
+        controller.tableView.separatorStyle = .none // since we remove storyboard we have to set it directly here
         controller.loadViewIfNeeded()
         controller.tableView.showsVerticalScrollIndicator = false
         controller.tableView.showsHorizontalScrollIndicator = false
