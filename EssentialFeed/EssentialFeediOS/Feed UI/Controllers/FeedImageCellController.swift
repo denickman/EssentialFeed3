@@ -32,7 +32,7 @@ public final class FeedImageCellController: NSObject, ResourceView, ResourceLoad
     }
     
     // MARK: - Methods
-
+    
     /// in order to use shared logic we split into two `display` methods
     /// splitting that unify all the states in one into multiple view model
     ///
@@ -87,7 +87,7 @@ public final class FeedImageCellController: NSObject, ResourceView, ResourceLoad
 
 // MARK: - CellController
 
-extension FeedImageCellController: CellController {
+extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, UITableViewDataSourcePrefetching {
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         1

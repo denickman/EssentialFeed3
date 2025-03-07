@@ -8,11 +8,9 @@
 import UIKit
 import EssentialFeed
 
-// instead of using custom protocol CellController we use this typealias because we can get all of the
-// required logic form these table view data source / delegate methods
-public typealias CellController = UITableViewDataSource & UITableViewDelegate & UITableViewDataSourcePrefetching
-
 public final class ListViewController: UITableViewController {
+    
+    // MARK:  - Properties
     
     @IBOutlet private(set) public var errorView: ErrorView?
     
@@ -24,6 +22,8 @@ public final class ListViewController: UITableViewController {
         didSet { tableView.reloadData() }
     }
     
+    // MARK:  - Lifecycle
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         refresh()
@@ -33,6 +33,8 @@ public final class ListViewController: UITableViewController {
         super.viewDidLayoutSubviews()
         tableView.sizeTableHeaderToFit()
     }
+    
+    // MARK:  - Methods
     
     public func display(_ cellControllers: [CellController]) {
         loadingControllers = [:]
@@ -51,8 +53,8 @@ extension ListViewController: UITableViewDataSourcePrefetching {
     }
     
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let controller = cellController(forRowAt: indexPath)
-        return controller.tableView(tableView, cellForRowAt: indexPath)
+        let ds = cellController(forRowAt: indexPath).dataSource
+        return ds.tableView(tableView, cellForRowAt: indexPath)
     }
     
     /// Когда вы вызываете `tableView.reloadData()`, это приводит к повторной загрузке данных в таблице, что включает перерасчет всех видимых ячеек и обновление их на экране. Однако, перед тем как обновить эти ячейки, система вызывает метод делегата `tableView(_:didEndDisplaying:forRowAt:)` для каждой ячейки, которая больше не отображается на экране.
@@ -62,21 +64,21 @@ extension ListViewController: UITableViewDataSourcePrefetching {
     /// This is not a big problem at the moment since items cannot be removed from the feed. But we cannot assume the backend will keep this behavior going further.
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let controller = removeLoadingController(forRowAt: indexPath)
-        controller?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+        let delegate = removeLoadingController(forRowAt: indexPath)?.delegate
+        delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
     }
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
-            let controller = cellController(forRowAt: indexPath)
-            controller.tableView(tableView, prefetchRowsAt: [indexPath])
+            let dsp = cellController(forRowAt: indexPath).dataSourcePrefetching
+            dsp?.tableView(tableView, prefetchRowsAt: [indexPath])
         }
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
-            let controller = removeLoadingController(forRowAt: indexPath)
-            controller?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
+            let dsp = removeLoadingController(forRowAt: indexPath)?.dataSourcePrefetching
+            dsp?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
         }
     }
     
