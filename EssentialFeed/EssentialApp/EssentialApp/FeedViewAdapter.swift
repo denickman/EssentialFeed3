@@ -48,7 +48,8 @@ final class FeedViewAdapter: ResourceView {
 //                }
             )
             
-            return CellController(view) // data source, delegate, prefetching
+            /// since `model` is hashable and `id` is AnyHashable we can apply code like this
+            return CellController(id: model, view) // data source, delegate, prefetching
         })
     }
 }

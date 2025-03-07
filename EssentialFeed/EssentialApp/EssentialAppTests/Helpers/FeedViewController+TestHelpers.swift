@@ -60,7 +60,8 @@ extension ListViewController {
     }
     
     func numberOfRenderedFeedImageViews() -> Int {
-        tableView.numberOfRows(inSection: feedImagesSection)
+        // due to snapshot.appendSections([0]) in ListViewController we have to check
+        tableView.numberOfSections == 0 ? 0 : tableView.numberOfRows(inSection: feedImagesSection)
     }
     
     func feedImageView(at row: Int) -> UITableViewCell? {
@@ -74,6 +75,12 @@ extension ListViewController {
     // for error view tapping
     func simulateErrorViewTap() {
         errorView.simulateTap()
-    }   
+    }
+    
+    // preventing rendering cells in tests
+    public override func loadViewIfNeeded() {
+        super.loadViewIfNeeded()
+        tableView.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
+    }
     
 }

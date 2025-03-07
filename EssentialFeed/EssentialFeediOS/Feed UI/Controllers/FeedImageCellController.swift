@@ -113,13 +113,18 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
         }
         
         delegate.didRequestImage()
-        
+
         /// accessibilityIdentifier for EssentialAppUIAcceptanceTests
         cell?.accessibilityIdentifier = "feed-image-cell"
         cell?.feedImageView.accessibilityIdentifier = "feed-image-view"
         
         return cell!
     }
+    
+    /// `cellForRowAt` be called a bunch of time ahead of time while `willDisplay` is only call when cell is about to be rendering
+    ///  if you don't have a good estimated size you can move your logic to load expesive resources here (estimatedRowHeight)
+    ///  if you have a good estimation you can do it in `cellForRow`
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {}
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         delegate.didRequestImage()

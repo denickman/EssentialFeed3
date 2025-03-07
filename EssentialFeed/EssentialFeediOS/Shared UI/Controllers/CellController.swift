@@ -27,21 +27,40 @@ import UIKit
 /// #Option 3
 // prfer a struct better because we can use differnt inits here
 public struct CellController {
+    // withoud id we cannot confirm to equatable or hasahble, so we need id
+   /// AnyHashable — это тип-обертка, позволяющий хранить любые Hashable значения внутри себя. [42, "Hello", UUID()]
+   /// Основное предназначение AnyHashable — работа с разными типами, соответствующими Hashable, в одной коллекции.
+
+    let id: AnyHashable // когда необходимо работать с hashable но без привязки к конкретному типу
     let dataSource: UITableViewDataSource
     let delegate: UITableViewDelegate?
     let dataSourcePrefetching: UITableViewDataSourcePrefetching?
     
-    public init(_ dataSource: UITableViewDataSource & UITableViewDelegate & UITableViewDataSourcePrefetching) {
+    public init(id: AnyHashable, _ dataSource: UITableViewDataSource & UITableViewDelegate & UITableViewDataSourcePrefetching) {
+        self.id = id
         self.dataSource = dataSource
         self.delegate = dataSource
         self.dataSourcePrefetching = dataSource
     }
     
     // second convenience init
-    public init(_ dataSource: UITableViewDataSource) {
+    public init(id: AnyHashable, _ dataSource: UITableViewDataSource) {
+        self.id = id
         self.dataSource = dataSource
         self.delegate = nil
         self.dataSourcePrefetching = nil
     }
 }
 
+/// Если бы вы не реализовали Equatable для CellController, то попытка сравнить два объекта этого типа с использованием оператора == привела бы к ошибке компиляции, потому что Swift не знал бы, как сравнить два объекта CellController.
+extension CellController: Equatable {
+    public static func == (lhs: CellController, rhs: CellController) -> Bool {
+         lhs.id == rhs.id
+    }
+}
+
+extension CellController: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}

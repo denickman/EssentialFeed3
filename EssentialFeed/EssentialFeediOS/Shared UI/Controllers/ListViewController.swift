@@ -12,20 +12,25 @@ public final class ListViewController: UITableViewController {
     
     // MARK:  - Properties
     
+    public var onRefresh: (() -> Void)?
     private(set) public var errorView = ErrorView()
-    
     private var loadingControllers = [IndexPath: CellController]()
     
-    public var onRefresh: (()->Void)?
-    
-    private var tableModel = [CellController]() {
-        didSet { tableView.reloadData() }
-    }
+        // CellController should be Hashable so diffable data source can compare any change to the model, it`s keep track the state for us
+    // DDS will try to imply by the estimated row height how many cells it can load ahead of time and load only these cells
+    private lazy var dataSource: UITableViewDiffableDataSource<Int, CellController> = {
+        .init(tableView: tableView) { tableView, indexPath, controller in
+            print("Index path \(indexPath)")
+            let ds = controller.dataSource
+            return ds.tableView(tableView, cellForRowAt: indexPath)
+        }
+    }()
     
     // MARK:  - Lifecycle
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.dataSource = dataSource
         configureErrorView()
         refresh()
     }
@@ -35,11 +40,19 @@ public final class ListViewController: UITableViewController {
         tableView.sizeTableHeaderToFit()
     }
     
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            tableView.reloadData()
+        }
+    }
+    
     // MARK:  - Methods
     
     public func display(_ cellControllers: [CellController]) {
-        loadingControllers = [:]
-        tableModel = cellControllers
+        var snapshot = NSDiffableDataSourceSnapshot<Int, CellController>() // create an empty snapshot
+        snapshot.appendSections([0])
+        snapshot.appendItems(cellControllers, toSection: 0)
+        dataSource.apply(snapshot) // tell ds to apply snapshot, the ds will check what change using the hashable implementation and only update what is necessary
     }
     
     @IBAction private func refresh() {
@@ -70,52 +83,30 @@ public final class ListViewController: UITableViewController {
 }
 
 extension ListViewController: UITableViewDataSourcePrefetching {
-    
-    public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableModel.count
-    }
-    
-    public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let ds = cellController(forRowAt: indexPath).dataSource
-        return ds.tableView(tableView, cellForRowAt: indexPath)
-    }
-    
-    /// Когда вы вызываете `tableView.reloadData()`, это приводит к повторной загрузке данных в таблице, что включает перерасчет всех видимых ячеек и обновление их на экране. Однако, перед тем как обновить эти ячейки, система вызывает метод делегата `tableView(_:didEndDisplaying:forRowAt:)` для каждой ячейки, которая больше не отображается на экране.
 
-    /// When updating the table model and reloading the table, UIKit calls `didEndDisplayingCell` for each removed cell that was previously visible. Since we're canceling requests in this method, we could be sending messages to the new models or potentially crashing in case the new table model has fewer items than the previous one!
-    
-    /// This is not a big problem at the moment since items cannot be removed from the feed. But we cannot assume the backend will keep this behavior going further.
-    
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let delegate = removeLoadingController(forRowAt: indexPath)?.delegate
+        let delegate = cellController(at: indexPath)?.delegate
         delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
     }
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
-            let dsp = cellController(forRowAt: indexPath).dataSourcePrefetching
+            let dsp = cellController(at: indexPath)?.dataSourcePrefetching
             dsp?.tableView(tableView, prefetchRowsAt: [indexPath])
         }
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
-            let dsp = removeLoadingController(forRowAt: indexPath)?.dataSourcePrefetching
+            let dsp = cellController(at: indexPath)?.dataSourcePrefetching
             dsp?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
         }
     }
     
-    private func cellController(forRowAt indexPath: IndexPath) -> CellController {
-        let controller = tableModel[indexPath.row]
-        loadingControllers[indexPath] = controller
-        return controller
+    private func cellController(at indexPath: IndexPath) -> CellController? {
+        dataSource.itemIdentifier(for: indexPath)
     }
-    
-    private func removeLoadingController(forRowAt indexPath: IndexPath) -> CellController? {
-        let controller = loadingControllers[indexPath]
-        loadingControllers[indexPath] = nil
-        return controller
-    }
+
 }
 
 extension ListViewController: ResourceLoadingView {
@@ -129,3 +120,13 @@ extension ListViewController: ResourceErrorView {
         errorView.message = viewModel.message
     }
 }
+
+
+/*
+ /// Когда вы вызываете `tableView.reloadData()`, это приводит к повторной загрузке данных в таблице, что включает перерасчет всех видимых ячеек и обновление их на экране. Однако, перед тем как обновить эти ячейки, система вызывает метод делегата `tableView(_:didEndDisplaying:forRowAt:)` для каждой ячейки, которая больше не отображается на экране.
+
+ /// When updating the table model and reloading the table, UIKit calls `didEndDisplayingCell` for each removed cell that was previously visible. Since we're canceling requests in this method, we could be sending messages to the new models or potentially crashing in case the new table model has fewer items than the previous one!
+ 
+ /// This is not a big problem at the moment since items cannot be removed from the feed. But we cannot assume the backend will keep this behavior going further.
+ 
+ */
