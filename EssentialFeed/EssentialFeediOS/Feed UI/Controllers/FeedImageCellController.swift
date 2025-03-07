@@ -13,15 +13,18 @@ public protocol FeedImageCellControllerDelegate {
     func didCancelImageRequest()
 }
 
-public final class FeedImageCellController: CellController, ResourceView, ResourceLoadingView, ResourceErrorView {
+// CellController controls the whole lifecycle of cell right now
+
+public final class FeedImageCellController: NSObject, ResourceView, ResourceLoadingView, ResourceErrorView {
     
     public typealias ResourceViewModel = UIImage
+    
+    // MARK: - Properties
     
     // the only things that will change is <UIImage> that will come asyncronously from the backend
     private var cell: FeedImageCell?
     private let delegate: FeedImageCellControllerDelegate
     private let viewModel: FeedImageViewModel // never change
-    
     
     public init(viewModel: FeedImageViewModel, delegate: FeedImageCellControllerDelegate) {
         self.delegate = delegate
@@ -29,36 +32,6 @@ public final class FeedImageCellController: CellController, ResourceView, Resour
     }
     
     // MARK: - Methods
-    
-    public func view(in tableView: UITableView) -> UITableViewCell {
-        cell = tableView.dequeueReusableCell()
-        
-        cell?.locationContainer.isHidden = !viewModel.hasLocation
-        cell?.locationLabel.text = viewModel.location
-        cell?.descriptionLabel.text = viewModel.description
-        cell?.onRetry = delegate.didRequestImage
- 
-        cell?.onReuse = { [weak self] in
-            self?.releaseCellForReuse()
-        }
-        
-        delegate.didRequestImage() 
-        
-        /// accessibilityIdentifier for EssentialAppUIAcceptanceTests
-        cell?.accessibilityIdentifier = "feed-image-cell"
-        cell?.feedImageView.accessibilityIdentifier = "feed-image-view"
-
-        return cell!
-    }
-    
-    public func preload() {
-        delegate.didRequestImage()
-    }
-    
-    public func cancelLoad() {
-        releaseCellForReuse()
-        delegate.didCancelImageRequest()
-    }
 
     /// in order to use shared logic we split into two `display` methods
     /// splitting that unify all the states in one into multiple view model
@@ -97,8 +70,59 @@ public final class FeedImageCellController: CellController, ResourceView, Resour
      Ensure previous cells' prepareForReuse doesn't affect new cells by removing the onReuse closure reference when releasing the cell for reuse.
      Every time we update the table view state, existing cells can be reused for different index paths, where they'll be managed by different cell controllers - so we need to remove all references to the previous cell controllers when releasing the cell for reuse. Since the `onReuse` closure references the cell controller via `self`, we need to set `onReuse` to `nil` when releasing the cell for reuse by another cell controller. This way, we ensure there are no references to the cell controller so there will be no side effects.
      */
+    
     func releaseCellForReuse() {
         cell?.onReuse = nil
         cell = nil
+    }
+    
+    // MARK: - Private
+    
+    private func cancelLoad() {
+        releaseCellForReuse()
+        delegate.didCancelImageRequest()
+    }
+    
+}
+
+// MARK: - CellController
+
+extension FeedImageCellController: CellController {
+    
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        1
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        cell = tableView.dequeueReusableCell()
+        
+        cell?.locationContainer.isHidden = !viewModel.hasLocation
+        cell?.locationLabel.text = viewModel.location
+        cell?.descriptionLabel.text = viewModel.description
+        cell?.onRetry = delegate.didRequestImage
+        
+        cell?.onReuse = { [weak self] in
+            self?.releaseCellForReuse()
+        }
+        
+        delegate.didRequestImage()
+        
+        /// accessibilityIdentifier for EssentialAppUIAcceptanceTests
+        cell?.accessibilityIdentifier = "feed-image-cell"
+        cell?.feedImageView.accessibilityIdentifier = "feed-image-view"
+        
+        return cell!
+    }
+    
+    public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        delegate.didRequestImage()
+    }
+    
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cancelLoad()
+    }
+    
+    public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+        cancelLoad()
     }
 }
