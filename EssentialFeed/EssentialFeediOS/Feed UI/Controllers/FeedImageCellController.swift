@@ -99,7 +99,14 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
         cell?.locationContainer.isHidden = !viewModel.hasLocation
         cell?.locationLabel.text = viewModel.location
         cell?.descriptionLabel.text = viewModel.description
-        cell?.onRetry = delegate.didRequestImage
+        
+        // always use a memory debugger in order to find out leaking cause
+        // due to potentian memory leak in FeedUIIntegrationTests we use a closure signature intead of equaling to delegate
+        // cell?.onRetry = delegate.didRequestImage
+        
+        cell?.onRetry = { [weak self] in
+            self?.delegate.didRequestImage()
+        }
         
         cell?.onReuse = { [weak self] in
             self?.releaseCellForReuse()

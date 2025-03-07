@@ -12,7 +12,7 @@ public final class ListViewController: UITableViewController {
     
     // MARK:  - Properties
     
-    @IBOutlet private(set) public var errorView: ErrorView?
+    private(set) public var errorView = ErrorView()
     
     private var loadingControllers = [IndexPath: CellController]()
     
@@ -26,6 +26,7 @@ public final class ListViewController: UITableViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        configureErrorView()
         refresh()
     }
     
@@ -43,6 +44,28 @@ public final class ListViewController: UITableViewController {
     
     @IBAction private func refresh() {
         onRefresh?()
+    }
+    
+    private func configureErrorView() {
+        let container = UIView()
+        container.backgroundColor = .clear
+        container.addSubview(errorView)
+        errorView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate ([
+            errorView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            errorView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            errorView.topAnchor.constraint(equalTo: container.topAnchor),
+            errorView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+        ])
+        
+        tableView.tableHeaderView = container
+        
+        errorView.onHide = { [weak self] in
+            self?.tableView.beginUpdates()
+            self?.tableView.sizeTableHeaderToFit()
+            self?.tableView.endUpdates()
+        }
     }
 }
 
@@ -103,6 +126,6 @@ extension ListViewController: ResourceLoadingView {
 
 extension ListViewController: ResourceErrorView {
     public func display(_ viewModel: ResourceErrorViewModel) {
-        errorView?.message = viewModel.message
+        errorView.message = viewModel.message
     }
 }
