@@ -9,12 +9,9 @@ import XCTest
 import EssentialFeediOS
 @testable import EssentialFeed
 
-
 /// New snapshot URL: file:///Users/denisyaremenko/Library/Developer/XCTestDevices/47A89C37-DB76-4132-BAFE-D0CCBFFC0190/data/tmp/FEED_WITH_CONTENT_light.png
 /// 
 ///stored snapshot URL: file:///Users/denisyaremenko/Desktop/iOS/Education/2025/Caio%20&%20Mike/EF/EF3/EF3/EssentialFeed/EssentialFeediOSTests/Feed%20UI/snapshots/FEED_WITH_CONTENT_light.png
-
-
 
 class FeedSnapshotTests: XCTestCase {
     
@@ -25,9 +22,11 @@ class FeedSnapshotTests: XCTestCase {
         
 //        record(snapshot: sut.snapshot(for: .iPhone8(style: .light)), named: "FEED_WITH_CONTENT_light")
 //        record(snapshot: sut.snapshot(for: .iPhone8(style: .dark)), named: "FEED_WITH_CONTENT_dark")
+//        record(snapshot: sut.snapshot(for: .iPhone8(style: .light, contentSize: .extraExtraExtraLarge)), named: "FEED_WITH_CONTENT_light_extraExtraExtraLarge")
         
         assert(snapshot: sut.snapshot(for: .iPhone8(style: .light)), named: "FEED_WITH_CONTENT_light")
         assert(snapshot: sut.snapshot(for: .iPhone8(style: .dark)), named: "FEED_WITH_CONTENT_dark")
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .light, contentSize: .extraExtraExtraLarge)), named: "FEED_WITH_CONTENT_light_extraExtraExtraLarge")
     }
     
     func test_feedWithFailedImageLoading() {
@@ -37,9 +36,11 @@ class FeedSnapshotTests: XCTestCase {
         
 //        record(snapshot: sut.snapshot(for: .iPhone8(style: .light)), named: "FEED_WITH_FAILED_IMAGE_LOADING_light")
 //        record(snapshot: sut.snapshot(for: .iPhone8(style: .dark)), named: "FEED_WITH_FAILED_IMAGE_LOADING_dark")
+//        record(snapshot: sut.snapshot(for: .iPhone8(style: .light, contentSize: .extraExtraExtraLarge)), named: "FEED_WITH_FAILED_IMAGE_LOADING_light_extraExtraExtraLarge")
         
         assert(snapshot: sut.snapshot(for: .iPhone8(style: .light)), named: "FEED_WITH_FAILED_IMAGE_LOADING_light")
         assert(snapshot: sut.snapshot(for: .iPhone8(style: .dark)), named: "FEED_WITH_FAILED_IMAGE_LOADING_dark")
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .light, contentSize: .extraExtraExtraLarge)), named: "FEED_WITH_FAILED_IMAGE_LOADING_light_extraExtraExtraLarge")
     }
     
     // MARK: - Helpers

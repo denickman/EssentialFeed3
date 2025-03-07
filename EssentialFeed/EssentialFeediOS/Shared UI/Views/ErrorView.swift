@@ -113,7 +113,11 @@ public final class ErrorView: UIButton {
         titleLabel?.textColor = .white
         titleLabel?.textAlignment = .center
         titleLabel?.numberOfLines = 0
-        titleLabel?.font = .systemFont(ofSize: 17)
+        //titleLabel?.font = .systemFont(ofSize: 17)
+        
+        // for dynamic fonts
+        titleLabel?.font = .preferredFont(forTextStyle: .body)
+        titleLabel?.adjustsFontForContentSizeCategory = true
         
         // label constraints was previously for the ErrorView: UIView not for ErrorView: UIButton
         
