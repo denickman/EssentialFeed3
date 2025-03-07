@@ -51,14 +51,14 @@ public final class ErrorView: UIButton {
     // MARK: - Lifecycle
     
     // awakeFromNib() вызывается только если объект был создан из Storyboard/XIB
-    public override func awakeFromNib() {
-        super.awakeFromNib()
-        hideMessage()
-    }
+//    public override func awakeFromNib() {
+//        super.awakeFromNib()
+//        hideMessage()
+//    }
     
     // MARK: - Methods
     
-    @IBAction private func hideMessageAnimated() {
+    @objc private func hideMessageAnimated() {
         UIView.animate(
             withDuration: 0.25,
             animations: { self.alpha = 0 },
