@@ -52,7 +52,16 @@ public final class ListViewController: UITableViewController {
         var snapshot = NSDiffableDataSourceSnapshot<Int, CellController>() // create an empty snapshot
         snapshot.appendSections([0])
         snapshot.appendItems(cellControllers, toSection: 0)
-        dataSource.apply(snapshot) // tell ds to apply snapshot, the ds will check what change using the hashable implementation and only update what is necessary
+        
+        if #available(iOS 15.0, *) {
+            /// Чтобы получить поведение перезагрузки всей таблицы (или коллекции), необходимо использовать метод applySnapshotUsingReloadData(snapshot)
+            /// в 15.0 - dataSource.apply(snapshot) всегда выполняет дифф и обновляет только измененные ячейки
+            dataSource.applySnapshotUsingReloadData(snapshot)
+        } else {
+            /// tell ds to apply snapshot, the ds will check what change using the hashable implementation and only update what is necessary
+            /// apply(snapshot) - перегрузка всей таблиці
+            dataSource.apply(snapshot)
+        }
     }
     
     @IBAction private func refresh() {
