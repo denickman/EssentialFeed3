@@ -12,7 +12,7 @@ import EssentialFeed
 import EssentialFeediOS
 import Combine
 
-final class CommentsUIIntegrationTests: FeedUIIntegrationTests {
+final class CommentsUIIntegrationTests: XCTestCase {
     
     func test_commentsView_hasTitle() {
         let (sut, _) = makeSUT()
@@ -96,8 +96,35 @@ final class CommentsUIIntegrationTests: FeedUIIntegrationTests {
         assertThat(sut, isRendering: [comment0])
     }
     
+    
+    func test_loadCommentsCompletion_dispatchesFromBackgroundToMainThread() {
+        let (sut, loader) = makeSUT()
+        sut.loadViewIfNeeded()
+        
+        let exp = expectation(description: "Wait for background queue")
+        DispatchQueue.global().async {
+            loader.completeCommentsLoading(at: 0)
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_loadCommentsCompletion_rendersErrorMessageOnErrorUntilNextReload() {
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        XCTAssertEqual(sut.errorMessage, nil)
+        
+        loader.completeCommentsLoadingWithError(at: 0)
+        XCTAssertEqual(sut.errorMessage, loadError)
+ 
+        sut.simulateUserInitiatedReload()
+        XCTAssertEqual(sut.errorMessage, nil)
+    }
+    
+
     // in order to test tap we switch error view from uiview to uibutotn in order to add tap
-    override func test_tapOnErrorView_hidesErrorMessage() {
+     func test_tapOnErrorView_hidesErrorMessage() {
         let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
