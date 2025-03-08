@@ -44,7 +44,7 @@ import EssentialFeediOS
         loader.completeFeedLoading(at: 0)
         XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once loading completes successfully")
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         // TODO: - does not work
         // XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once user initiates a reload")
         // loader.completeFeedLoadingWithError(at: 1)
@@ -64,7 +64,7 @@ import EssentialFeediOS
         loader.completeFeedLoading(with: [image0], at: 0)
         assertThat(sut, isRendering: [image0])
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         // TODO: - Does not work
         // loader.completeFeedLoading(with: [image0, image1, image2, image3], at: 1)
         // assertThat(sut, isRendering: [image0, image1, image2, image3])
@@ -78,7 +78,7 @@ import EssentialFeediOS
         loader.completeFeedLoading(with: [image0], at: 0)
         assertThat(sut, isRendering: [image0])
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         // TODO: - Does not work
         //        loader.completeFeedLoadingWithError(at: 1)
         //        assertThat(sut, isRendering: [image0])
@@ -93,7 +93,7 @@ import EssentialFeediOS
         loader.completeFeedLoadingWithError(at: 0)
         XCTAssertEqual(sut.errorMessage, loadError)
         
-        sut.simulateUserInitiatedFeedReload()
+        sut.simulateUserInitiatedReload()
         XCTAssertEqual(sut.errorMessage, nil)
     }
     
