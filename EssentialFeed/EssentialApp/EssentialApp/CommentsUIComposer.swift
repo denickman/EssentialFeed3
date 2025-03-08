@@ -1,8 +1,8 @@
 //
-//  FeedUIComposer.swift
-//  EssentialFeediOS
+//  CommentsUIComposer.swift
+//  EssentialApp
 //
-//  Created by Denis Yaremenko on 06.02.2025.
+//  Created by Denis Yaremenko on 08.03.2025.
 //
 
 import UIKit
@@ -10,25 +10,24 @@ import Combine
 import EssentialFeed
 import EssentialFeediOS
 
-public final class FeedUIComposer {
+public final class CommentsUIComposer {
     
     private init() {}
     
-    public static func feedComposedWith(
-        feedLoader: @escaping () -> AnyPublisher<[FeedImage], Error>,
-        imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher
+    public static func commentsComposedWith(
+        commentsLoader: @escaping () -> AnyPublisher<[FeedImage], Error>
     ) -> ListViewController {
         
         let presentationAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>(
-            loader: { feedLoader().dispatchOnMainQueue() })
+            loader: { commentsLoader().dispatchOnMainQueue() })
         
-        let feedController = makeFeedViewController(title: FeedPresenter.title)
+        let feedController = makeFeedViewController(title: ImageCommentsPresenter.title)
          
         feedController.onRefresh = presentationAdapter.loadResource
         
         let feedViewAdapter = FeedViewAdapter(
             controller: feedController,
-            imageLoader: { imageLoader($0).dispatchOnMainQueue() }
+            imageLoader: { _ in Empty<Data, Error>().eraseToAnyPublisher() }
         )
         
         let resourcePresenter = LoadResourcePresenter(
@@ -45,10 +44,9 @@ public final class FeedUIComposer {
     
     private static func makeFeedViewController(title: String) -> ListViewController {
         let bundle = Bundle(for: ListViewController.self)
-        let storyboard = UIStoryboard(name: "Feed", bundle: bundle)
+        let storyboard = UIStoryboard(name: "ImageComments", bundle: bundle)
         let feedController = storyboard.instantiateInitialViewController() as! ListViewController
         feedController.title = title
         return feedController
     }
 }
-
