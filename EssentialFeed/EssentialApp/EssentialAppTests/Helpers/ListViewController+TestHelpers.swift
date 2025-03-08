@@ -8,6 +8,7 @@
 import UIKit
 import EssentialFeediOS
 
+// Generic
 extension ListViewController {
     
     var errorMessage: String? {
@@ -18,12 +19,26 @@ extension ListViewController {
         refreshControl?.isRefreshing == true
     }
     
-    private var feedImagesSection: Int {
-        .zero
-    }
-    
     func simulateUserInitiatedReload() {
         refreshControl?.simulatePullToRefresh()
+    }
+    
+    // for error view tapping
+    func simulateErrorViewTap() {
+        errorView.simulateTap()
+    }
+    
+    // preventing rendering cells in tests
+    public override func loadViewIfNeeded() {
+        super.loadViewIfNeeded()
+        tableView.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
+    }
+}
+
+// Feed Specific
+extension ListViewController {
+    private var feedImagesSection: Int {
+        .zero
     }
     
     func renderedFeedImageData(at index: Int) -> Data? {
@@ -71,16 +86,35 @@ extension ListViewController {
         return ds?.tableView(tableView, cellForRowAt: index)
     }
     
+}
+
+// Comments Specific
+extension ListViewController {
     
-    // for error view tapping
-    func simulateErrorViewTap() {
-        errorView.simulateTap()
+    private var commentsSection: Int {
+        .zero
     }
     
-    // preventing rendering cells in tests
-    public override func loadViewIfNeeded() {
-        super.loadViewIfNeeded()
-        tableView.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
+    func numberOfRenderedComments() -> Int {
+        tableView.numberOfSections == 0 ? 0 : tableView.numberOfRows(inSection: commentsSection)
     }
     
+    func commentMessage(at row: Int) -> String? {
+        commentView(at: row)?.messageLabel.text
+    }
+    
+    func commentDate(at row: Int) -> String? {
+        commentView(at: row)?.dateLabel.text
+    }
+    
+    func commentUsername(at row: Int) -> String? {
+        commentView(at: row)?.usernameLabel.text
+    }
+    
+    private func commentView(at row: Int) -> ImageCommentCell? {
+        guard numberOfRenderedFeedImageViews() > row else { return nil }
+        let ds = tableView.dataSource
+        let index = IndexPath(row: row, section: commentsSection)
+        return ds?.tableView(tableView, cellForRowAt: index) as? ImageCommentCell
+    }
 }
