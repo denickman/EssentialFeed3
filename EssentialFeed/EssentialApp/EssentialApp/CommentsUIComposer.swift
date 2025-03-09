@@ -21,7 +21,7 @@ public final class CommentsUIComposer {
     ) -> ListViewController {
         
         let presentationAdapter = CommentsPresentationAdapter(
-            loader: { commentsLoader().dispatchOnMainQueue() }
+            loader: { commentsLoader() }
         )
         
         let commentsController = makeCommentsViewController(title: ImageCommentsPresenter.title)

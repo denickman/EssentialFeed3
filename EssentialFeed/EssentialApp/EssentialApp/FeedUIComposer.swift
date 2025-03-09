@@ -20,7 +20,7 @@ public final class FeedUIComposer {
     ) -> ListViewController {
         
         let presentationAdapter = LoadResourcePresentationAdapter<[FeedImage], FeedViewAdapter>(
-            loader: { feedLoader().dispatchOnMainQueue() })
+            loader: { feedLoader() })
         
         let feedController = makeFeedViewController(title: FeedPresenter.title)
          

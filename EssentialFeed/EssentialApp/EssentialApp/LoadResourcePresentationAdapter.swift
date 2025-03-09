@@ -34,6 +34,7 @@ final class LoadResourcePresentationAdapter<Resource, View: ResourceView> {
         presenter?.didStartLoading()
         
         cancellable = loader()
+            .dispatchOnMainQueue()
             .sink { [weak self] completion in
                 switch completion {
                 case .finished: break
