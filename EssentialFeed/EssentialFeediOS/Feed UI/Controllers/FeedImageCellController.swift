@@ -25,10 +25,16 @@ public final class FeedImageCellController: NSObject, ResourceView, ResourceLoad
     private var cell: FeedImageCell?
     private let delegate: FeedImageCellControllerDelegate
     private let viewModel: FeedImageViewModel // never change
+    private let selection: () -> Void
     
-    public init(viewModel: FeedImageViewModel, delegate: FeedImageCellControllerDelegate) {
+    public init(
+        viewModel: FeedImageViewModel,
+        delegate: FeedImageCellControllerDelegate,
+        selection: @escaping () -> Void
+    ) {
         self.delegate = delegate
         self.viewModel = viewModel
+        self.selection = selection
     }
     
     // MARK: - Methods
@@ -136,5 +142,9 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
         cancelLoad()
+    }
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selection()
     }
 }
