@@ -36,7 +36,7 @@ import EssentialFeediOS
          sut.simulateTapOnFeedImage(at: 1)
          XCTAssertEqual(selectedImages, [image0, image1])
      }
-     
+      
     func test_loadFeedActions_requestFeedFromLoader() {
         let (sut, loader) = makeSUT()
         XCTAssertEqual(loader.loadFeedCallCount, 0, "Expected no loading requests before view is loaded")
