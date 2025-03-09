@@ -219,6 +219,8 @@
 		85D3E64A2D7C7BD700717BF2 /* Screenshot 2025-03-08 at 15.20.41.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Screenshot 2025-03-08 at 15.20.41.png"; sourceTree = "<group>"; };
 		85D3E7482D7DC74100717BF2 /* FeedEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedEndpoint.swift; sourceTree = "<group>"; };
 		85D3E74C2D7DC75F00717BF2 /* ImageCommentsEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCommentsEndpoint.swift; sourceTree = "<group>"; };
+		85D3E74E2D7DC9FE00717BF2 /* show comments.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "show comments.png"; sourceTree = "<group>"; };
+		85D3E7552D7DDC7B00717BF2 /* feed.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = feed.md; sourceTree = "<group>"; };
 		85FCF67F2D53867B00DAEB70 /* EssentialFeediOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EssentialFeediOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85FCF6862D53867B00DAEB70 /* EssentialFeediOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialFeediOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -360,6 +362,7 @@
 				85D3E64C2D7C7C5800717BF2 /* 002. Image Comments Presentatio */,
 				85D3E64B2D7C7C3900717BF2 /* 003 Presentation */,
 				85D3E6492D7C7BB700717BF2 /* 004. Composition */,
+				85D3E7552D7DDC7B00717BF2 /* feed.md */,
 			);
 			path = Guides;
 			sourceTree = "<group>";
@@ -499,6 +502,7 @@
 			isa = PBXGroup;
 			children = (
 				85D3E64A2D7C7BD700717BF2 /* Screenshot 2025-03-08 at 15.20.41.png */,
+				85D3E74E2D7DC9FE00717BF2 /* show comments.png */,
 			);
 			path = "004. Composition";
 			sourceTree = "<group>";

@@ -43,7 +43,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private lazy var localFeedLoader: LocalFeedLoader = {
         LocalFeedLoader(store: store, currentDate: Date.init)
     }()
-    
+        
     // MARK: - Init
     
     convenience init(httpClient: HTTPClient, store: FeedStore & FeedImageDataStore) {
@@ -88,7 +88,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         /// Option 2
         return httpClient
             .getPublisher(url: url) // side effect
-            .delay(for: 2, scheduler: DispatchQueue.main)
+//            .delay(for: 2, scheduler: DispatchQueue.main)
             .tryMap(FeedItemsMapper.map) // pure function
             .caching(to: localFeedLoader) // side effect
             .fallback(to: localFeedLoader.loadPublisher)

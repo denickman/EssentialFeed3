@@ -20,9 +20,7 @@ public final class ListViewController: UITableViewController {
     // DDS will try to imply by the estimated row height how many cells it can load ahead of time and load only these cells
     private lazy var dataSource: UITableViewDiffableDataSource<Int, CellController> = {
         .init(tableView: tableView) { tableView, indexPath, controller in
-            print("Index path \(indexPath)")
-            let ds = controller.dataSource
-            return ds.tableView(tableView, cellForRowAt: indexPath)
+            controller.dataSource.tableView(tableView, cellForRowAt: indexPath)
         }
     }()
     

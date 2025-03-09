@@ -109,7 +109,8 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
         // always use a memory debugger in order to find out leaking cause
         // due to potentian memory leak in FeedUIIntegrationTests we use a closure signature intead of equaling to delegate
         // cell?.onRetry = delegate.didRequestImage
-        
+  
+ 
         cell?.onRetry = { [weak self] in
             self?.delegate.didRequestImage()
         }
@@ -117,9 +118,9 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
         cell?.onReuse = { [weak self] in
             self?.releaseCellForReuse()
         }
-        
-        delegate.didRequestImage()
 
+        delegate.didRequestImage()
+        
         /// accessibilityIdentifier for EssentialAppUIAcceptanceTests
         cell?.accessibilityIdentifier = "feed-image-cell"
         cell?.feedImageView.accessibilityIdentifier = "feed-image-view"
@@ -133,7 +134,7 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {}
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        delegate.didRequestImage()
+//        delegate.didRequestImage()
     }
     
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -145,6 +146,7 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("DID TAP")
         selection()
     }
 }
