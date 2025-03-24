@@ -73,7 +73,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         localFeedLoader.validateCache { _ in }
     }
     
-    private func makeRemoteFeedLoaderWithLocalFallback() -> AnyPublisher<[FeedImage], Error> {
+    private func makeRemoteFeedLoaderWithLocalFallback() -> AnyPublisher<Paginated<FeedImage>, Error> {
         /// Option 1
         //        let remoteFeedLoader = httpClient.getPublisher(url: remoteURL)
         //            .tryMap { (data, response) in
@@ -92,6 +92,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .tryMap(FeedItemsMapper.map) // pure function
             .caching(to: localFeedLoader) // side effect
             .fallback(to: localFeedLoader.loadPublisher)
+            .map {
+                Paginated(items: $0)
+            }
+            .eraseToAnyPublisher()
     }
     
     private func makeLocalImageLoaderWithRemoteFallback(url: URL) -> FeedImageDataLoader.Publisher {
