@@ -15,15 +15,20 @@ extension FeedUIIntegrationTests {
     class LoaderSpy: FeedImageDataLoader {
         
         // MARK: - FeedLoader
-        
-        private var feedRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
-        
+
         var loadFeedCallCount: Int {
-            return feedRequests.count
+             feedRequests.count
         }
         
+        private(set) var loadMoreCallCount = 0
+        
+        private var feedRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
+
+
         func completeFeedLoading(with feed: [FeedImage] = [], at index: Int = 0) {
-            feedRequests[index].send(Paginated(items: feed))
+            feedRequests[index].send(Paginated(items: feed, loadMore: { [weak self] _ in
+                self?.loadMoreCallCount += 1
+            }))
         }
         
         func completeFeedLoadingWithError(at index: Int = 0) {
@@ -31,12 +36,13 @@ extension FeedUIIntegrationTests {
             feedRequests[index].send(completion: .failure(error))
         }
         
-        
         func loadPublisher() -> AnyPublisher<Paginated<FeedImage>, Error> {
             let publisher = PassthroughSubject<Paginated<FeedImage>, Error>()
             feedRequests.append(publisher)
             return publisher.eraseToAnyPublisher()
         }
+        
+        
         
         // MARK: - FeedImageDataLoader
         

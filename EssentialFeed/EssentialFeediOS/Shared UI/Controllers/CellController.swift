@@ -44,12 +44,19 @@ public struct CellController {
     }
     
     // second convenience init
+//    public init(id: AnyHashable, _ dataSource: UITableViewDataSource) {
+//        self.id = id
+//        self.dataSource = dataSource
+//        self.delegate = nil
+//        self.dataSourcePrefetching = nil
+//    }
+    
     public init(id: AnyHashable, _ dataSource: UITableViewDataSource) {
-        self.id = id
-        self.dataSource = dataSource
-        self.delegate = nil
-        self.dataSourcePrefetching = nil
-    }
+           self.id = id
+           self.dataSource = dataSource
+           self.delegate = dataSource as? UITableViewDelegate
+           self.dataSourcePrefetching = dataSource as? UITableViewDataSourcePrefetching
+       }
 }
 
 /// Если бы вы не реализовали Equatable для CellController, то попытка сравнить два объекта этого типа с использованием оператора == привела бы к ошибке компиляции, потому что Swift не знал бы, как сравнить два объекта CellController.

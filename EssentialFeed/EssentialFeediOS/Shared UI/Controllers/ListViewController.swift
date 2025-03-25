@@ -46,11 +46,20 @@ public final class ListViewController: UITableViewController {
     
     // MARK:  - Methods
     
-    public func display(_ cellControllers: [CellController]) {
+    /// Троеточие (...) позволяет передавать несколько аргументов типа [CellController] через запятую, которые внутри функции собираются в массив sections. Это делает вызов удобным и логичным для работы с множеством секций.
+    /// Без ... функция принимает только один массив, и передача через запятую невозможна — нужен единый массив.
+    /// В вашем случае ... даёт возможность сохранить разделение на секции (feedSection, loadMoreSection) и упрощает API для работы с NSDiffableDataSourceSnapshot.
+    public func display(_ sections: [CellController]...) { // [[CellController]]
         var snapshot = NSDiffableDataSourceSnapshot<Int, CellController>() // create an empty snapshot
-        snapshot.appendSections([0])
-        snapshot.appendItems(cellControllers, toSection: 0)
         
+        sections.enumerated().forEach { index, cellControllers in // [CellController]
+            snapshot.appendSections([index]) // index - is a section
+            snapshot.appendItems(cellControllers, toSection: index)
+        }
+        
+        dataSource.apply(snapshot)
+        
+        /*
         if #available(iOS 15.0, *) {
             /// Чтобы получить поведение перезагрузки всей таблицы (или коллекции), необходимо использовать метод applySnapshotUsingReloadData(snapshot)
             /// в 15.0 - dataSource.apply(snapshot) всегда выполняет дифф и обновляет только измененные ячейки
@@ -60,6 +69,7 @@ public final class ListViewController: UITableViewController {
             /// apply(snapshot) - перегрузка всей таблиці
             dataSource.apply(snapshot)
         }
+         */
     }
     
     @IBAction private func refresh() {

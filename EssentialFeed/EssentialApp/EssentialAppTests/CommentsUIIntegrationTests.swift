@@ -17,7 +17,7 @@ final class CommentsUIIntegrationTests: XCTestCase {
     func test_commentsView_hasTitle() {
         let (sut, _) = makeSUT()
         sut.loadViewIfNeeded()
-        XCTAssertEqual(sut.title, commentstitle)
+        XCTAssertEqual(sut.title, commentsTitle)
     }
     
     func test_loadCommentsActions_requestCommentsFromLoader() {

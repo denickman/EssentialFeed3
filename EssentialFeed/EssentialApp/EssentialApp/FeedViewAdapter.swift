@@ -28,8 +28,7 @@ final class FeedViewAdapter: ResourceView {
     }
     
     func display(_ viewModel: Paginated<FeedImage>) {
-        controller?.display(viewModel.items.map { model in
-            
+        let feedSection: [CellController] = viewModel.items.map { model in
             let adapter = ImageDataPresentationAdapter(loader: { [imageLoader] in
                 // partial application of a function
                 // adapting completion with params (url) to compeltion with no params ()
@@ -58,7 +57,15 @@ final class FeedViewAdapter: ResourceView {
             
             /// since `model` is hashable and `id` is AnyHashable we can apply code like this
             return CellController(id: model, view) // data source, delegate, prefetching
-        })
+        }
+        
+        let loadMore = LoadMoreCellController { [weak self] in
+            viewModel.loadMore?({ _ in })
+        }
+        
+        let loadMoreSection = [CellController(id: UUID(), loadMore)] // a section for load more cell ctrl with only 1 item
+
+        controller?.display(feedSection, loadMoreSection)
     }
 }
 

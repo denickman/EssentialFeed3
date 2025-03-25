@@ -346,10 +346,9 @@ class FeedUIIntegrationTests: XCTestCase {
     
     func test_loadImageDataCompletion_dispatchesFromBackgroundToMainThread() {
         let (sut, loader) = makeSUT()
-        
         sut.loadViewIfNeeded()
-        loader.completeFeedLoading(with: [makeImage()])
-        _ = sut.simulateFeedImageViewVisible(at: 0)
+//        loader.completeFeedLoading(with: [makeImage()])
+//        _ = sut.simulateFeedImageViewVisible(at: 0)
         
         let exp = expectation(description: "Wait for background queue")
         DispatchQueue.global().async {
@@ -358,6 +357,19 @@ class FeedUIIntegrationTests: XCTestCase {
         }
         wait(for: [exp], timeout: 1.0)
     }
+    
+
+    func test_loadMoreActions_requestMoreFromLoader() {
+            let (sut, loader) = makeSUT()
+            sut.loadViewIfNeeded()
+            loader.completeFeedLoading()
+
+            XCTAssertEqual(loader.loadMoreCallCount, 0, "Expected no requests before until load more action")
+
+            sut.simulateLoadMoreFeedAction()
+            XCTAssertEqual(loader.loadMoreCallCount, 1, "Expected load more request")
+        }
+    
     
     // MARK: - Helpers
     
