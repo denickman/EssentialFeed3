@@ -10,7 +10,33 @@ import Combine
 import EssentialFeed
 
 public extension Paginated {
-    var loadMorePublisher: (() -> AnyPublisher<Self,Error>)? {
+    
+    // converting publisher into closure
+    init(items: [Item], loadMorePublisher: (() -> AnyPublisher<Self, Error>)?) {
+        /// Метод .map применяется к Optional и выполняет преобразование только если значение не nil. Если loadMorePublisher равно nil, результат тоже будет nil.
+        ///
+        /// Subscribers.Sink -
+        /// Это готовая реализация подписчика (Subscriber) из Combine.
+        /// Метод subscribe привязывает Sink к publisher() (экземпляру AnyPublisher<Self, Error>).
+        /// Sink начинает "слушать" события от publisher'а.
+        self.init(items: items, loadMore: loadMorePublisher.map { publisher in
+            return { completion in
+                publisher().subscribe(Subscribers.Sink(receiveCompletion: { result in
+                    switch result {
+                    case .failure(let error):
+                        completion(.failure(error))
+                    case .finished:
+                        break
+                    }
+                }, receiveValue: { value in
+                    completion(.success(value))
+                }))
+            }
+        })
+    }
+    
+    // converting closure into publisher
+    var loadMorePublisher: (() -> AnyPublisher<Self, Error>)? {
         
         // bridging from a closure into a publisher
         
