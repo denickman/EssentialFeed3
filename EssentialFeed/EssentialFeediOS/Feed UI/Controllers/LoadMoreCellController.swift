@@ -22,7 +22,8 @@ public class LoadMoreCellController: NSObject, UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-       cell // we do need to reuse, only 1 cell
+        cell.selectionStyle = .none
+       return cell // we do need to reuse, only 1 cell
     }
 }
 

@@ -111,6 +111,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 (items + newItems, newItems.last) // combine with existing items
             }
             .map(makePage)
+//            .delay(for: 2, scheduler: DispatchQueue.main)
+//            .flatMap { _ in
+//                Fail(error: NSError())
+//            }
             .caching(to: localFeedLoader)
     }
     
@@ -119,7 +123,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let url = FeedEndpoint.get(after: after).url(baseURL: baseURL)
         return httpClient
             .getPublisher(url: url) // side effect
-            // .delay(for: 2, scheduler: DispatchQueue.main)
             .tryMap(FeedItemsMapper.map) // // pure function
             .eraseToAnyPublisher()
     }
