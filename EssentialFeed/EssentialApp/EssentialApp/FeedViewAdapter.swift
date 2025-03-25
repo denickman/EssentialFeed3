@@ -17,6 +17,8 @@ final class FeedViewAdapter: ResourceView {
     
     private typealias ImageDataPresentationAdapter = LoadResourcePresentationAdapter<Data, WeakRefVirtualProxy<FeedImageCellController>>
     
+    private typealias LoadMorePresentationAdapter = LoadResourcePresentationAdapter<Paginated<FeedImage>, FeedViewAdapter>
+
     init(
         controller: ListViewController,
         imageLoader: @escaping (URL) -> FeedImageDataLoader.Publisher,
@@ -46,23 +48,28 @@ final class FeedViewAdapter: ResourceView {
                 resourceView: WeakRefVirtualProxy(view),
                 loadingView: WeakRefVirtualProxy(view),
                 errorView: WeakRefVirtualProxy(view),
-                mapper: UIImage.tryMake
-//                mapper: { data in
-//                    guard let image = UIImage(data: data) else {
-//                        throw InvalidImageData()
-//                    }
-//                    return image
-//                }
+                mapper: UIImage.tryMake // data -> UIImage
             )
             
             /// since `model` is hashable and `id` is AnyHashable we can apply code like this
             return CellController(id: model, view) // data source, delegate, prefetching
         }
         
-        let loadMore = LoadMoreCellController { [weak self] in
-            viewModel.loadMore?({ _ in })
+        guard let loadMorePublisher = viewModel.loadMorePublisher else {
+            controller?.display(feedSection)
+            return
         }
         
+        let loadMoreAdapter = LoadMorePresentationAdapter(loader: loadMorePublisher)
+        let loadMore = LoadMoreCellController(callback: loadMoreAdapter.loadResource)
+
+        loadMoreAdapter.presenter = LoadResourcePresenter(
+            resourceView: self,
+            loadingView: WeakRefVirtualProxy(loadMore),
+            errorView: WeakRefVirtualProxy(loadMore),
+            mapper: { $0 }
+        )
+ 
         let loadMoreSection = [CellController(id: UUID(), loadMore)] // a section for load more cell ctrl with only 1 item
 
         controller?.display(feedSection, loadMoreSection)

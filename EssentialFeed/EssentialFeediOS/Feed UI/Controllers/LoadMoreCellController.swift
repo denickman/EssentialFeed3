@@ -17,7 +17,6 @@ public class LoadMoreCellController: NSObject, UITableViewDataSource {
         self.callback = callback
     }
     
-
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         1
     }
@@ -28,7 +27,8 @@ public class LoadMoreCellController: NSObject, UITableViewDataSource {
 }
 
 extension LoadMoreCellController: UITableViewDelegate {
-    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, willDisplay: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard !cell.isLoading else { return }
         callback()
     }
 }

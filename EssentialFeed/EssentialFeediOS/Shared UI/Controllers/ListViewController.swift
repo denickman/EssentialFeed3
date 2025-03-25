@@ -101,11 +101,6 @@ public final class ListViewController: UITableViewController {
 
 extension ListViewController: UITableViewDataSourcePrefetching {
 
-    public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let delegate = cellController(at: indexPath)?.delegate
-        delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
-    }
-    
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
             let dsp = cellController(at: indexPath)?.dataSourcePrefetching
@@ -119,16 +114,29 @@ extension ListViewController: UITableViewDataSourcePrefetching {
             dsp?.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
         }
     }
+
+    private func cellController(at indexPath: IndexPath) -> CellController? {
+        dataSource.itemIdentifier(for: indexPath)
+    }
+}
+
+// MARK: - UITableViewDelegate
+
+extension ListViewController {
+    public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let delegate = cellController(at: indexPath)?.delegate
+        delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+    }
     
     public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let dl = cellController(at: indexPath)?.delegate
         dl?.tableView?(tableView, didSelectRowAt: indexPath)
     }
-
-    private func cellController(at indexPath: IndexPath) -> CellController? {
-        dataSource.itemIdentifier(for: indexPath)
+    
+    public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let dl = cellController(at: indexPath)?.delegate
+        dl?.tableView?(tableView, willDisplay: cell, forRowAt: indexPath)
     }
- 
 }
 
 extension ListViewController: ResourceLoadingView {

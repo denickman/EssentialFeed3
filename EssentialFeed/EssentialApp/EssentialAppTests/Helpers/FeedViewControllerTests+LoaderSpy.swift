@@ -41,9 +41,7 @@ extension FeedUIIntegrationTests {
             feedRequests.append(publisher)
             return publisher.eraseToAnyPublisher()
         }
-        
-        
-        
+ 
         // MARK: - FeedImageDataLoader
         
         private struct TaskSpy: FeedImageDataLoaderTask {
