@@ -76,17 +76,43 @@ class FeedUIIntegrationTests: XCTestCase {
         sut.loadViewIfNeeded()
         assertThat(sut, isRendering: [])
         
+        loader.completeFeedLoading(with: [image0, image1], at: 0)
+        assertThat(sut, isRendering: [image0, image1])
+        
+        sut.simulateLoadMoreFeedAction()
+        loader.completeLoadMore(with: [image0, image1, image2, image3], at: 0)
+        assertThat(sut, isRendering: [image0, image1, image2, image3])
+        
+        sut.simulateUserInitiatedReload()
+        loader.completeFeedLoading(with: [image0, image1], at: 1)
+        assertThat(sut, isRendering: [image0, image1])
+    }
+    
+    func test_loadFeedCompletion_rendersSuccessfullyLoadedEmptyFeedAfterNonEmptyFeed() {
+        // case when at first we have feeds models in feedvctrl,
+        // then feed went away and didEndDisplaying may potentially crash after table view reload its data
+        let image0 = makeImage()
+        let image1 = makeImage()
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
         loader.completeFeedLoading(with: [image0], at: 0)
         assertThat(sut, isRendering: [image0])
         
+        sut.simulateLoadMoreFeedAction()
+        loader.completeLoadMore(with: [image0, image1], at: 0)
+        assertThat(sut, isRendering: [image0, image1])
+        
+        // load again but receive an empty image models
         sut.simulateUserInitiatedReload()
-        // TODO: - Does not work
-        // loader.completeFeedLoading(with: [image0, image1, image2, image3], at: 1)
-        // assertThat(sut, isRendering: [image0, image1, image2, image3])
+        loader.completeFeedLoading(with: [], at: 1)
+        assertThat(sut, isRendering: [])
     }
     
     func test_loadFeedCompletion_doesNotAlterCurrentRenderingStateOnError() {
         let image0 = makeImage()
+        let image1 = makeImage()
+        
         let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
@@ -94,9 +120,12 @@ class FeedUIIntegrationTests: XCTestCase {
         assertThat(sut, isRendering: [image0])
         
         sut.simulateUserInitiatedReload()
-        // TODO: - Does not work
-        //        loader.completeFeedLoadingWithError(at: 1)
-        //        assertThat(sut, isRendering: [image0])
+        loader.completeFeedLoadingWithError(at: 1)
+        assertThat(sut, isRendering: [image0])
+        
+        sut.simulateLoadMoreFeedAction()
+        loader.completeLoadMoreWithError(at: 0)
+        assertThat(sut, isRendering: [image0])
     }
     
     func test_loadFeedCompletion_rendersErrorMessageOnErrorUntilNextReload() {
@@ -332,34 +361,39 @@ class FeedUIIntegrationTests: XCTestCase {
         XCTAssertNil(view?.renderedImage, "Expected no rendered image when an image load finishes after the view is not visible anymore")
     }
     
+    // test threading violation
     func test_loadFeedCompletion_dispatchesFromBackgroundToMainThread() {
         let (sut, loader) = makeSUT()
         sut.loadViewIfNeeded()
         
-        let exp = expectation(description: "Wait for background queue")
+        let exp = expectation(description: "Wait for the background queue")
+        
         DispatchQueue.global().async {
             loader.completeFeedLoading(at: 0)
             exp.fulfill()
         }
+        
         wait(for: [exp], timeout: 1.0)
     }
     
     func test_loadImageDataCompletion_dispatchesFromBackgroundToMainThread() {
         // TODO: - Thread 7: Fatal error: Index out of range
-//        let (sut, loader) = makeSUT()
-//        sut.loadViewIfNeeded()
-////        loader.completeFeedLoading(with: [makeImage()])
-////        _ = sut.simulateFeedImageViewVisible(at: 0)
-//        
-//        let exp = expectation(description: "Wait for background queue")
-//        DispatchQueue.global().async {
-//            loader.completeImageLoading(with: self.anyImageData(), at: 0)
-//            exp.fulfill()
-//        }
-//        wait(for: [exp], timeout: 1.0)
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        loader.completeFeedLoading(with: [makeImage()])
+        _ = sut.simulateFeedImageViewVisible(at: 0)
+        
+        // check the 003 caio & mike updates
+        
+        //        let exp = expectation(description: "Wait for background queue")
+        //        DispatchQueue.global().async {
+        //            loader.completeImageLoading(with: self.anyImageData(), at: 0)
+        //            exp.fulfill()
+        //        }
+        //        wait(for: [exp], timeout: 1.0)
     }
     
-
     func test_loadMoreActions_requestMoreFromLoader() {
         let (sut, loader) = makeSUT()
         sut.loadViewIfNeeded()
@@ -386,14 +420,6 @@ class FeedUIIntegrationTests: XCTestCase {
         XCTAssertEqual(loader.loadMoreCallCount, 3, "Expected no request after loading all pages")
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
     func test_loadingMoreIndicator_isVisibleWhileLoadingMore() {
         let (sut, loader) = makeSUT()
         
@@ -416,14 +442,7 @@ class FeedUIIntegrationTests: XCTestCase {
 //        loader.completeLoadMoreWithError(at: 1)
 //        XCTAssertFalse(sut.isShowingLoadMoreFeedIndicator, "Expected no loading indicator once user initiated loading completes with error")
     }
-    
-    
-    
-    
-    
-    
-    
-    
+       
     // MARK: - Helpers
     
     private func makeSUT(
