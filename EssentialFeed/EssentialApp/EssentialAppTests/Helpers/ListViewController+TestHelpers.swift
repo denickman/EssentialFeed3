@@ -48,17 +48,21 @@ extension ListViewController {
 }
 
 extension ListViewController {
-    
-    private var feedImagesSection: Int { 0 }
-    private var feedLoadMoreSection: Int { 1 }
+ 
+    var canLoadMoreFeed: Bool {
+        loadMoreFeedCell() != nil
+    }
     
     var isShowingLoadMoreFeedIndicator: Bool {
         loadMoreFeedCell()?.isLoading == true
     }
-    
+
     var loadMoreFeedErrorMessage: String? {
         loadMoreFeedCell()?.message
     }
+    
+    private var feedImagesSection: Int { 0 }
+    private var feedLoadMoreSection: Int { 1 }
     
     func numberOfRenderedFeedImageViews() -> Int {
         /// tableView.reloadData does not force an immediate layout update
@@ -96,11 +100,7 @@ extension ListViewController {
     func simulateFeedImageViewVisible(at index: Int) -> FeedImageCell? {
         return feedImageView(at: index) as? FeedImageCell
     }
-    
-    var canLoadMoreFeed: Bool {
-        loadMoreFeedCell() != nil
-    }
-    
+ 
     @discardableResult
     func simulateFeedImageViewNotVisible(at row: Int) -> FeedImageCell? {
         let view = simulateFeedImageViewVisible(at: row)
