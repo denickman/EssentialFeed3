@@ -84,6 +84,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             items: items,
             loadMorePublisher: last.map { last in
                 { self.makeRemoteLoadMoreLoader(items: items, last: last) }
+                /// or use load from cache option, see method `makeRemoteLoadMoreLoader(last: FeedImage?)`
+                /// { self.makeRemoteLoadMoreLoader(last: last) }
             })
     }
     
@@ -118,6 +120,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .caching(to: localFeedLoader)
     }
     
+    // recurstion # 2 - with cache in order to not increase the RAM
+    private func makeRemoteLoadMoreLoader(last: FeedImage?) -> AnyPublisher<Paginated<FeedImage>, Error> {
+            localFeedLoader.loadPublisher()
+                .zip(makeRemoteFeedLoader(after: last))
+                .map { (cachedItems, newItems) in
+                    (cachedItems + newItems, newItems.last)
+                }.map(makePage)
+                .caching(to: localFeedLoader)
+        }
     
     private func makeRemoteFeedLoader(after: FeedImage? = nil) -> AnyPublisher<[FeedImage], Error> {
         let url = FeedEndpoint.get(after: after).url(baseURL: baseURL)
