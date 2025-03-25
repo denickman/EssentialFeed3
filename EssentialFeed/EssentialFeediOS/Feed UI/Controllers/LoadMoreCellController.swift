@@ -12,6 +12,7 @@ public class LoadMoreCellController: NSObject, UITableViewDataSource {
     
     private let cell = LoadMoreCell()
     private let callback: () -> Void
+    private var offsetObserver: NSKeyValueObservation?
     
     public init(callback: @escaping () -> Void) {
         self.callback = callback
@@ -30,12 +31,22 @@ public class LoadMoreCellController: NSObject, UITableViewDataSource {
 extension LoadMoreCellController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, willDisplay: UITableViewCell, forRowAt indexPath: IndexPath) {
         reloadIfNeeded()
+        
+      offsetObserver = tableView.observe(\.contentOffset, options: .new) { [weak self] (tableView, value) in
+            guard tableView.isDragging else { return }
+            print("TV Dragging....")
+            self?.reloadIfNeeded()
+        }
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         reloadIfNeeded()
     }
     
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        offsetObserver = nil
+    }
+
     private func reloadIfNeeded() {
         guard !cell.isLoading else { return }
         callback()
