@@ -38,16 +38,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }()
     
     private lazy var store: FeedStore & FeedImageDataStore = {
-        //        do {
-        //            return try CoreDataFeedStore(
-        //                storeURL: NSPersistentContainer
-        //                    .defaultDirectoryURL()
-        //                    .appendingPathComponent("feed-store.sqlite"))
-        //        } catch {
-        //            assertionFailure("Failed to instantiate CoreData store with error \(error)")
-        //            logger.fault("Failed to instantiate CoreData store with error \(error)")
+                do {
+                    return try CoreDataFeedStore(
+                        storeURL: NSPersistentContainer
+                            .defaultDirectoryURL()
+                            .appendingPathComponent("feed-store.sqlite"))
+                } catch {
+                    assertionFailure("Failed to instantiate CoreData store with error \(error)")
+                    logger.fault("Failed to instantiate CoreData store with error \(error)")
         return NullStore()
-        //        }
+                }
     }()
     
     private lazy var localFeedLoader: LocalFeedLoader = {
@@ -153,6 +153,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         return localImageLoader
             .loadImageDataPublisher(from: url)
+            .logCacheMisses(url: url, logger: logger)
             .fallback(to: { [httpClient, logger] in
                 return httpClient
                     .getPublisher(url: url)
@@ -181,10 +182,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
 extension Publisher {
+    
+    func logCacheMisses(url: URL, logger: Logger) -> AnyPublisher<Output, Failure> {
+          return handleEvents(receiveCompletion: { result in
+            if case .failure = result {
+                logger.trace(">> Cache miss url: \(url)")
+            }
+        })
+        .eraseToAnyPublisher()
+    }
+    
+    
     func logErrors(url: URL, logger: Logger) -> AnyPublisher<Output, Failure> {
         return handleEvents(receiveCompletion: { result in
             if case let .failure(error) = result {
-                logger.trace(">> FAILED to load url: \(url) with error: \(error)")
+                logger.trace(">> Failed to load url: \(url) with error: \(error)")
             }
         })
         .eraseToAnyPublisher()
@@ -194,12 +206,12 @@ extension Publisher {
         var startTime = CACurrentMediaTime()
         return handleEvents(
             receiveSubscription: { _ in
-                logger.trace(">> Started loading url: \(url)")
+//                logger.trace(">> Started loading url: \(url)")
                 startTime = CACurrentMediaTime()
             },
             receiveCompletion: { result in
                 let elapsed = CACurrentMediaTime() - startTime
-                logger.trace(">> Finished loading url in \(elapsed) seconds.")
+//                logger.trace(">> Finished loading url in \(elapsed) seconds.")
             })
         .eraseToAnyPublisher()
     }

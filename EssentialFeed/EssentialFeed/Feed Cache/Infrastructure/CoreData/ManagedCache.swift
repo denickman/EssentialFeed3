@@ -28,4 +28,9 @@ extension ManagedCache {
     var localFeed: [LocalFeedImage] {
         return feed.compactMap { ($0 as? ManagedFeedImage)?.local }
     }
+    
+    override func prepareForDeletion() {
+        super.prepareForDeletion()
+        print(">> PREPARE FOR DELETION")
+    }
 }
