@@ -72,9 +72,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {
         localFeedLoader.validateCache { _ in }
     }
-    
  
-    
     private func makeFirstPage(items: [FeedImage]) -> Paginated<FeedImage> {
         makePage(items: items, last: items.last)
     }
@@ -108,11 +106,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // recursion
     private func makeRemoteLoadMoreLoader(items: [FeedImage], last: FeedImage?) -> AnyPublisher<Paginated<FeedImage>, Error> {
-        return makeRemoteFeedLoader(after: last) // get remote feed loader
+        return makeRemoteFeedLoader(after: last)
             .map { newItems in // receive new items
                 (items + newItems, newItems.last) // combine with existing items
             }
-            .map(makePage)
+            .map(makePage) // will return Paginated<FeedImage>
 //            .delay(for: 2, scheduler: DispatchQueue.main)
 //            .flatMap { _ in
 //                Fail(error: NSError())
@@ -120,7 +118,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .caching(to: localFeedLoader)
     }
     
-    // recurstion # 2 - with cache in order to not increase the RAM
+    // recurstion # 2 if necessary - with cache in order to not increase the RAM
     private func makeRemoteLoadMoreLoader(last: FeedImage?) -> AnyPublisher<Paginated<FeedImage>, Error> {
             localFeedLoader.loadPublisher()
                 .zip(makeRemoteFeedLoader(after: last))
@@ -137,23 +135,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .tryMap(FeedItemsMapper.map) // // pure function
             .eraseToAnyPublisher()
     }
-    
-    
-    
-    
-    
-    
-    
-    
-   
-    
-    
-    
-    
-    
-    
-    
-    
     
     private func makeLocalImageLoaderWithRemoteFallback(url: URL) -> FeedImageDataLoader.Publisher {
         

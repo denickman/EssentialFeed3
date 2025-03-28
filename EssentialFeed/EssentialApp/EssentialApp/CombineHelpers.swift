@@ -13,12 +13,11 @@ public extension Paginated {
     
     // converting publisher into closure
     init(items: [Item], loadMorePublisher: (() -> AnyPublisher<Self, Error>)?) {
-        /// Метод .map применяется к Optional и выполняет преобразование только если значение не nil. Если loadMorePublisher равно nil, результат тоже будет nil.
-        ///
-        /// Subscribers.Sink -
-        /// Это готовая реализация подписчика (Subscriber) из Combine.
+        /// Subscribers.Sink - Это готовая реализация подписчика (Subscriber) из Combine.
         /// Метод subscribe привязывает Sink к publisher() (экземпляру AnyPublisher<Self, Error>).
         /// Sink начинает "слушать" события от publisher'а.
+        ///
+        /// Метод .map применяется к Optional и выполняет преобразование только если значение не nil. Если loadMorePublisher равно nil, результат тоже будет nil.
         self.init(items: items, loadMore: loadMorePublisher.map { publisher in
             return { completion in
                 publisher().subscribe(Subscribers.Sink(receiveCompletion: { result in

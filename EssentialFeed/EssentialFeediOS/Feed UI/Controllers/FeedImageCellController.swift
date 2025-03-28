@@ -146,7 +146,6 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("DID TAP")
         selection()
     }
 }

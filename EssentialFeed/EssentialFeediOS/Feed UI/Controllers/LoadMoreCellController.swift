@@ -24,7 +24,7 @@ public class LoadMoreCellController: NSObject, UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         cell.selectionStyle = .none
-       return cell // we do need to reuse, only 1 cell
+        return cell // we do need to reuse, only 1 cell
     }
 }
 
@@ -32,7 +32,7 @@ extension LoadMoreCellController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, willDisplay: UITableViewCell, forRowAt indexPath: IndexPath) {
         reloadIfNeeded()
         
-      offsetObserver = tableView.observe(\.contentOffset, options: .new) { [weak self] (tableView, value) in
+        offsetObserver = tableView.observe(\.contentOffset, options: .new) { [weak self] (tableView, value) in
             guard tableView.isDragging else { return }
             print("TV Dragging....")
             self?.reloadIfNeeded()
@@ -46,7 +46,7 @@ extension LoadMoreCellController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         offsetObserver = nil
     }
-
+    
     private func reloadIfNeeded() {
         guard !cell.isLoading else { return }
         callback()
@@ -63,6 +63,5 @@ extension LoadMoreCellController: ResourceErrorView {
     public func display(_ viewModel: ResourceErrorViewModel) {
         cell.message = viewModel.message
     }
-    
     
 }
