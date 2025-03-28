@@ -33,26 +33,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             selection: showComments))
     
     private lazy var httpClient: HTTPClient = {
+        //  HTTPClientProfilingDecorator(decoratee: URLSessionHTTPClient(session: URLSession(configuration: .ephemeral)), logger: logger)
         URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
     }()
     
     private lazy var store: FeedStore & FeedImageDataStore = {
-        do {
-            return try CoreDataFeedStore(
-                storeURL: NSPersistentContainer
-                    .defaultDirectoryURL()
-                    .appendingPathComponent("feed-store.sqlite"))
-        } catch {
-            assertionFailure("Failed to instantiate CoreData store with error \(error)")
-            logger.fault("Failed to instantiate CoreData store with error \(error)")
-            return NullStore()
-        }
+        //        do {
+        //            return try CoreDataFeedStore(
+        //                storeURL: NSPersistentContainer
+        //                    .defaultDirectoryURL()
+        //                    .appendingPathComponent("feed-store.sqlite"))
+        //        } catch {
+        //            assertionFailure("Failed to instantiate CoreData store with error \(error)")
+        //            logger.fault("Failed to instantiate CoreData store with error \(error)")
+        return NullStore()
+        //        }
     }()
     
     private lazy var localFeedLoader: LocalFeedLoader = {
         LocalFeedLoader(store: store, currentDate: Date.init)
     }()
-        
+    
     // MARK: - Init
     
     convenience init(httpClient: HTTPClient, store: FeedStore & FeedImageDataStore) {
@@ -81,7 +82,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {
         localFeedLoader.validateCache { _ in }
     }
- 
+    
     private func makeFirstPage(items: [FeedImage]) -> Paginated<FeedImage> {
         makePage(items: items, last: items.last)
     }
@@ -104,7 +105,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //            }
         //            .caching(to: localFeedLoader)
         //            .fallback(to: localFeedLoader.loadPublisher)
-                
+        
         /// Option 2
         return makeRemoteFeedLoader()
             .caching(to: localFeedLoader) // side effect
@@ -120,22 +121,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 (items + newItems, newItems.last) // combine with existing items
             }
             .map(makePage) // will return Paginated<FeedImage>
-//            .delay(for: 2, scheduler: DispatchQueue.main)
-//            .flatMap { _ in
-//                Fail(error: NSError())
-//            }
+        //            .delay(for: 2, scheduler: DispatchQueue.main)
+        //            .flatMap { _ in
+        //                Fail(error: NSError())
+        //            }
             .caching(to: localFeedLoader)
     }
     
     // recurstion # 2 if necessary - with cache in order to not increase the RAM
     private func makeRemoteLoadMoreLoader(last: FeedImage?) -> AnyPublisher<Paginated<FeedImage>, Error> {
-            localFeedLoader.loadPublisher()
-                .zip(makeRemoteFeedLoader(after: last))
-                .map { (cachedItems, newItems) in
-                    (cachedItems + newItems, newItems.last)
-                }.map(makePage)
-                .caching(to: localFeedLoader)
-        }
+        localFeedLoader.loadPublisher()
+            .zip(makeRemoteFeedLoader(after: last))
+            .map { (cachedItems, newItems) in
+                (cachedItems + newItems, newItems.last)
+            }.map(makePage)
+            .caching(to: localFeedLoader)
+    }
     
     private func makeRemoteFeedLoader(after: FeedImage? = nil) -> AnyPublisher<[FeedImage], Error> {
         let url = FeedEndpoint.get(after: after).url(baseURL: baseURL)
@@ -146,17 +147,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func makeLocalImageLoaderWithRemoteFallback(url: URL) -> FeedImageDataLoader.Publisher {
-        
-        let remoteImageLoader = RemoteFeedImageDataLoader(client: httpClient)
+        //let client = HTTPClientProfilingDecorator(decoratee: httpClient, logger: logger)
+        //let remoteImageLoader = RemoteFeedImageDataLoader(client: httpClient)
         let localImageLoader = LocalFeedImageDataLoader(store: store)
         
         return localImageLoader
             .loadImageDataPublisher(from: url)
-            .fallback {
-                remoteImageLoader
-                    .loadImageDataPublisher(from: url)
+            .fallback(to: { [httpClient, logger] in
+                return httpClient
+                    .getPublisher(url: url)
+                    .logErrors(url: url, logger: logger)
+                    .logElapsedTime(url: url, logger: logger)
+                    .tryMap(FeedImageDataMapper.map)
                     .caching(to: localImageLoader, using: url)
-            }
+            })
     }
     
     private func showComments(for image: FeedImage) {
@@ -176,17 +180,58 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 
 
+extension Publisher {
+    func logErrors(url: URL, logger: Logger) -> AnyPublisher<Output, Failure> {
+        return handleEvents(receiveCompletion: { result in
+            if case let .failure(error) = result {
+                logger.trace(">> FAILED to load url: \(url) with error: \(error)")
+            }
+        })
+        .eraseToAnyPublisher()
+    }
+    
+    func logElapsedTime(url: URL, logger: Logger) -> AnyPublisher<Output, Failure> {
+        var startTime = CACurrentMediaTime()
+        return handleEvents(
+            receiveSubscription: { _ in
+                logger.trace(">> Started loading url: \(url)")
+                startTime = CACurrentMediaTime()
+            },
+            receiveCompletion: { result in
+                let elapsed = CACurrentMediaTime() - startTime
+                logger.trace(">> Finished loading url in \(elapsed) seconds.")
+            })
+        .eraseToAnyPublisher()
+    }
+}
 
 
-
-
-
-
-
-
-
-
-
+// если не используем combine
+private class HTTPClientProfilingDecorator: HTTPClient {
+    
+    private let decoratee: HTTPClient
+    private let logger: Logger
+    
+    internal init(decoratee: any HTTPClient, logger: Logger) {
+        self.decoratee = decoratee
+        self.logger = logger
+    }
+    
+    func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
+        logger.trace(">> Started loading url: \(url)")
+        let startTime = CACurrentMediaTime()
+        return decoratee.get(from: url, completion: { [logger] result in
+            
+            if case let .failure(error) = result {
+                logger.trace("FAILED to load url: \(url) with error: \(error)")
+            }
+            let elapsed = CACurrentMediaTime() - startTime
+            logger.trace(">> Finished loading url in \(elapsed) seconds.")
+            
+            completion(result)
+        })
+    }
+}
 
 
 
@@ -209,4 +254,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
  
  window?.rootViewController = feedViewController
  */
+
+
 

@@ -34,7 +34,6 @@ extension LoadMoreCellController: UITableViewDelegate {
         
         offsetObserver = tableView.observe(\.contentOffset, options: .new) { [weak self] (tableView, value) in
             guard tableView.isDragging else { return }
-            print("TV Dragging....")
             self?.reloadIfNeeded()
         }
     }
