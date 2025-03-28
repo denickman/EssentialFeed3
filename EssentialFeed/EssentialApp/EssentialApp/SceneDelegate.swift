@@ -5,6 +5,7 @@
 //  Created by Denis Yaremenko on 13.02.2025.
 //
 
+import os
 import UIKit
 import EssentialFeed
 import EssentialFeediOS
@@ -22,6 +23,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
     private lazy var baseURL = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed")!
+    
+    private lazy var logger = Logger(subsystem: "com.yaremenko.denis.Essential", category: "main") // main module
     
     private lazy var navigationController = UINavigationController(
         rootViewController: FeedUIComposer.feedComposedWith(
@@ -41,6 +44,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     .appendingPathComponent("feed-store.sqlite"))
         } catch {
             assertionFailure("Failed to instantiate CoreData store with error \(error)")
+            logger.fault("Failed to instantiate CoreData store with error \(error)")
             return NullStore()
         }
     }()
