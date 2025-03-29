@@ -83,14 +83,15 @@ extension FeedUIIntegrationTests {
             lastPage: Bool = false,
             at index: Int = 0
         ) {
-            loadMoreRequests[index].send(Paginated(
+            let paginated = Paginated(
                 items: feed,
                 loadMorePublisher: lastPage ? nil : { [weak self] in
                     let publisher = PassthroughSubject<Paginated<FeedImage>, Error>()
                     self?.loadMoreRequests.append(publisher)
                     return publisher.eraseToAnyPublisher()
                 })
-            )
+
+            loadMoreRequests[index].send(paginated)
         }
         
         func completeLoadMoreWithError(at index: Int = 0) {
