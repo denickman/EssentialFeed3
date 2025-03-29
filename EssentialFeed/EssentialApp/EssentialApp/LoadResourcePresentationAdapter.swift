@@ -23,6 +23,7 @@ final class LoadResourcePresentationAdapter<Resource, View: ResourceView> {
     var presenter: LoadResourcePresenter<Resource, View>?
     private var cancellable: Cancellable?
     private let loader: () -> AnyPublisher<Resource, Error>
+    private var isLoading = false // to prevent repeating loading process
     
     // MARK: - Init
     
@@ -31,16 +32,28 @@ final class LoadResourcePresentationAdapter<Resource, View: ResourceView> {
     }
     
     func loadResource() {
+        guard !isLoading else {
+            return
+        }
         presenter?.didStartLoading()
+        isLoading = true
         
         cancellable = loader()
             .dispatchOnMainQueue()
+            .handleEvents(receiveCancel: { [weak self] in
+                self?.isLoading = false // if we cancel the loading process set isLoading to false
+            })
             .sink { [weak self] completion in
                 switch completion {
-                case .finished: break
+                case .finished:
+                    break
+                    
                 case let .failure(error):
                     self?.presenter?.didFinishLoading(with: error)
                 }
+                
+                self?.isLoading = false
+                
             } receiveValue: { [weak self] resource in
                 self?.presenter?.didFinishLoading(with: resource) // because of send from class LoaderSpy: FeedImageDataLoader
             }

@@ -15,7 +15,7 @@ public protocol FeedImageCellControllerDelegate {
 
 // CellController controls the whole lifecycle of cell right now
 
-public final class FeedImageCellController: NSObject, ResourceView, ResourceLoadingView, ResourceErrorView {
+public final class FeedImageCellController: NSObject {
     
     public typealias ResourceViewModel = UIImage
     
@@ -38,21 +38,6 @@ public final class FeedImageCellController: NSObject, ResourceView, ResourceLoad
     }
     
     // MARK: - Methods
-    
-    /// in order to use shared logic we split into two `display` methods
-    /// splitting that unify all the states in one into multiple view model
-    ///
-    public func display(_ viewModel: UIImage) {
-        cell?.feedImageView.setImageAnimated(viewModel)
-    }
-    
-    public func display(_ viewModel: ResourceLoadingViewModel) {
-        cell?.feedImageContainer.isShimmering = viewModel.isLoading
-    }
-    
-    public func display(_ viewModel: ResourceErrorViewModel) {
-        cell?.feedImageRetryButton.isHidden = viewModel.message == nil
-    }
     
     /*
      1. Оптимизация повторного использования ячеек (cell reuse):
@@ -109,8 +94,8 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
         // always use a memory debugger in order to find out leaking cause
         // due to potentian memory leak in FeedUIIntegrationTests we use a closure signature intead of equaling to delegate
         // cell?.onRetry = delegate.didRequestImage
-  
- 
+        
+        
         cell?.onRetry = { [weak self] in
             self?.delegate.didRequestImage()
         }
@@ -118,7 +103,7 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
         cell?.onReuse = { [weak self] in
             self?.releaseCellForReuse()
         }
-
+        
         delegate.didRequestImage()
         
         /// accessibilityIdentifier for EssentialAppUIAcceptanceTests
@@ -134,7 +119,7 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {}
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-//        delegate.didRequestImage()
+        delegate.didRequestImage()
     }
     
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -147,5 +132,24 @@ extension FeedImageCellController: UITableViewDataSource, UITableViewDelegate, U
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selection()
+    }
+}
+
+// MARK: - ResourceView, ResourceLoadingView, ResourceErrorVie
+extension FeedImageCellController: ResourceView, ResourceLoadingView, ResourceErrorView {
+    
+    /// in order to use shared logic we split into two `display` methods
+    /// splitting that unify all the states in one into multiple view model
+    
+    public func display(_ viewModel: UIImage) {
+        cell?.feedImageView.setImageAnimated(viewModel)
+    }
+    
+    public func display(_ viewModel: ResourceLoadingViewModel) {
+        cell?.feedImageContainer.isShimmering = viewModel.isLoading
+    }
+    
+    public func display(_ viewModel: ResourceErrorViewModel) {
+        cell?.feedImageRetryButton.isHidden = viewModel.message == nil
     }
 }
