@@ -17,37 +17,29 @@ public final class LocalFeedImageDataLoader {
 }
 
 extension LocalFeedImageDataLoader: FeedImageDataCache {
-    public typealias SaveResult = Result<Void, Error>
+   
+   // public typealias SaveResult = Result<Void, Error> // for async api
 
     public enum SaveError: Error {
         case failed
     }
+    
+    // for sync api
+    public func save(_ data: Data, for url: URL) throws {
+        do {
+            try store.insert(data, for: url)
+        } catch {
+            throw SaveError.failed
+        }
+    }
 
-    public func save(_ data: Data, for url: URL, completion: @escaping (SaveResult) -> Void) {
-        
-        // for async api
+    // for async api
+//    public func save(_ data: Data, for url: URL, completion: @escaping (SaveResult) -> Void) {
 //        store.insert(data, for: url) { [weak self] result in
 //            guard self != nil else { return }
 //            completion(result.mapError { _ in SaveError.failed })
 //        }
-
-        
-        // for sync api
-        completion(SaveResult {
-            // Здесь используется инициализатор Result, который принимает замыкание где
-            // Success — это тип возвращаемого значения (в данном случае Void, так как insert ничего не возвращает).
-            // Error — это тип ошибки, которая может быть выброшена.
-            
-//            Замыкание { try store.insert(data, for: url) }:
-//            Выполняет синхронный вызов store.insert(_:for:).
-//            Если insert завершается успешно, результатом будет .success(()) (успех с пустым значением Void).
-//            Если insert выбрасывает ошибку, результатом будет .failure(error) с этой ошибкой.
-            
-            try store.insert(data, for: url)
-        }
-            .mapError { _ in SaveError.failed }
-        )
-    }
+//    }
 }
 
 extension LocalFeedImageDataLoader: FeedImageDataLoader {

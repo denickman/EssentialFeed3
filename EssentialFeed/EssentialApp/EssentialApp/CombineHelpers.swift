@@ -91,7 +91,7 @@ extension Publisher where Output == Data {
 
 private extension FeedImageDataCache {
     func saveIgnoringResult(_ data: Data, for url: URL) {
-        save(data, for: url) { _ in }
+        try? save(data, for: url)
     }
 }
 
@@ -163,7 +163,7 @@ extension DispatchQueue {
         private init() {
             DispatchQueue.main.setSpecific(key: Self.key, value: Self.value)
         }
-
+        
         private func isMainQueue() -> Bool {
             DispatchQueue.getSpecific(key: Self.key) == Self.value // we are on the main queue
         }
