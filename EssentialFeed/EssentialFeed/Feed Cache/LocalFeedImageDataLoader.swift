@@ -24,10 +24,29 @@ extension LocalFeedImageDataLoader: FeedImageDataCache {
     }
 
     public func save(_ data: Data, for url: URL, completion: @escaping (SaveResult) -> Void) {
-        store.insert(data, for: url) { [weak self] result in
-            guard self != nil else { return }
-            completion(result.mapError { _ in SaveError.failed })
+        
+        // for async api
+//        store.insert(data, for: url) { [weak self] result in
+//            guard self != nil else { return }
+//            completion(result.mapError { _ in SaveError.failed })
+//        }
+
+        
+        // for sync api
+        completion(SaveResult {
+            // Здесь используется инициализатор Result, который принимает замыкание где
+            // Success — это тип возвращаемого значения (в данном случае Void, так как insert ничего не возвращает).
+            // Error — это тип ошибки, которая может быть выброшена.
+            
+//            Замыкание { try store.insert(data, for: url) }:
+//            Выполняет синхронный вызов store.insert(_:for:).
+//            Если insert завершается успешно, результатом будет .success(()) (успех с пустым значением Void).
+//            Если insert выбрасывает ошибку, результатом будет .failure(error) с этой ошибкой.
+            
+            try store.insert(data, for: url)
         }
+            .mapError { _ in SaveError.failed }
+        )
     }
 }
 
