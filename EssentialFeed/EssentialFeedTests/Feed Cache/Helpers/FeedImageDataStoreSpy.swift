@@ -23,6 +23,7 @@ class FeedImageDataStoreSpy: FeedImageDataStore {
     
     // for sync api
     private var insertionResult: Result<Void, Error>?
+    private var retrievalResult: Result<Data?, Error>?
 
     // async api
     func insert(_ data: Data, for url: URL, completion: @escaping (FeedImageDataStore.InsertionResult) -> Void) {
@@ -36,11 +37,13 @@ class FeedImageDataStoreSpy: FeedImageDataStore {
     }
 
     func completeRetrieval(with data: Data?, at index: Int = 0) {
-        retrievalCompletions[index](.success(data))
+//        retrievalCompletions[index](.success(data)) // async api
+        retrievalResult = .success(data)
     }
     
     func completeRetrieval(with error: Error, at index: Int = 0) {
-        retrievalCompletions[index](.failure(error))
+//        retrievalCompletions[index](.failure(error)) // async api
+        retrievalResult = .failure(error)
     }
 
     func completeInsertionSuccessfully(at index: Int = 0) {
@@ -57,5 +60,10 @@ class FeedImageDataStoreSpy: FeedImageDataStore {
     func insert(_ data: Data, for url: URL) throws {
         receivedMessages.append(.insert(data: data, for: url))
         try insertionResult?.get()
+    }
+    
+    func retrieve(dataForURL url: URL) throws -> Data? {
+        receivedMessages.append(.retrieve(dataFor: url))
+        return try retrievalResult?.get()
     }
 }
