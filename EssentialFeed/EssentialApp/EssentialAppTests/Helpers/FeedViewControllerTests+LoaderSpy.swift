@@ -16,7 +16,7 @@ extension FeedUIIntegrationTests {
         
         // MARK: - FeedImageDataLoader
         
-        private struct TaskSpy: FeedImageDataLoaderTask {
+        private struct TaskSpy { // FeedImageDataLoaderTask // async api
             let cancelCallback: () -> Void
             func cancel() {
                 cancelCallback()
@@ -24,7 +24,8 @@ extension FeedUIIntegrationTests {
         }
 
         var loadedImageURLs: [URL] {
-            return imageRequests.map { $0.url }
+            []
+//            return imageRequests.map { $0.url }
         }
         
         private(set) var cancelledImageURLs = [URL]()
@@ -39,13 +40,19 @@ extension FeedUIIntegrationTests {
         
         private var feedRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
         private var loadMoreRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
-        private var imageRequests = [(url: URL, completion: (FeedImageDataLoader.Result) -> Void)]()
         
-        func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-            imageRequests.append((url, completion))
-            return TaskSpy { [weak self] in self?.cancelledImageURLs.append(url) }
+        // async api
+//        private var imageRequests = [(url: URL, completion: (FeedImageDataLoader.Result) -> Void)]()
+//        
+//        func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+//            imageRequests.append((url, completion))
+//            return TaskSpy { [weak self] in self?.cancelledImageURLs.append(url) }
+//        }
+        
+        func loadImageData(from url: URL) throws -> Data {
+            anyData()
         }
-
+        
         func loadPublisher() -> AnyPublisher<Paginated<FeedImage>, Error> {
             let publisher = PassthroughSubject<Paginated<FeedImage>, Error>()
             feedRequests.append(publisher)
@@ -69,12 +76,12 @@ extension FeedUIIntegrationTests {
 
         // Load Image
         func completeImageLoading(with imageData: Data = Data(), at index: Int = 0) {
-            imageRequests[index].completion(.success(imageData))
+//            imageRequests[index].completion(.success(imageData))
         }
         
         func completeImageLoadingWithError(at index: Int = 0) {
             let error = NSError(domain: "an error", code: 0)
-            imageRequests[index].completion(.failure(error))
+//            imageRequests[index].completion(.failure(error))
         }
 
         // Load More

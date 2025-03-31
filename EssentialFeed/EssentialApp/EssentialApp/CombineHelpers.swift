@@ -69,14 +69,13 @@ public extension FeedImageDataLoader {
     typealias Publisher = AnyPublisher<Data, Error>
     
     func loadImageDataPublisher(from url: URL) -> Publisher {
-        var task: FeedImageDataLoaderTask?
-        
-        return Deferred {
-            Future { completion in
-                task = self.loadImageData(from: url, completion: completion)
-            }
-        }
-        .handleEvents(receiveCancel: { task?.cancel() })
+        Deferred {
+                     Future { completion in
+                         completion(Result {
+                             try self.loadImageData(from: url)
+                         })
+                     }
+                 }
         .eraseToAnyPublisher()
     }
 }

@@ -8,11 +8,15 @@
 import Foundation
 
 // FeedImageDataLoaderTask относится к уровню загрузки изображений (работает с FeedImageDataLoader).
-public protocol FeedImageDataLoaderTask {
-    func cancel()
-}
+// async api
+//public protocol FeedImageDataLoaderTask {
+//    func cancel()
+//}
 
 public protocol FeedImageDataLoader {
-    typealias Result = Swift.Result<Data, Error>
-    func loadImageData(from url: URL, completion: @escaping (Result) -> Void) -> FeedImageDataLoaderTask
+    // async api
+//    typealias Result = Swift.Result<Data, Error>
+//    func loadImageData(from url: URL, completion: @escaping (Result) -> Void) -> FeedImageDataLoaderTask
+    
+    func loadImageData(from url: URL) throws -> Data
 }
