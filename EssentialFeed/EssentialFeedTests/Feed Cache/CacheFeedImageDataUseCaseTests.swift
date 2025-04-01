@@ -43,7 +43,7 @@ class CacheFeedImageDataUseCaseTests: XCTestCase {
         })
     }
     
-    // TODO: - This test is actual only in async API (currently we use sync API)
+    // TODO: - This test is actual only in ASync API (currently we use Sync API)
     //    func test_saveImageDataFromURL_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
     //        let store = FeedImageDataStoreSpy()
     //        var sut: LocalFeedImageDataLoader? = LocalFeedImageDataLoader(store: store)
@@ -72,7 +72,7 @@ class CacheFeedImageDataUseCaseTests: XCTestCase {
     }
     
     
-    // for async api
+    // for ASync API
     /*
      private func expect(_ sut: LocalFeedImageDataLoader, toCompleteWith expectedResult: LocalFeedImageDataLoader.SaveResult, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
      let exp = expectation(description: "Wait for load completion")
@@ -99,7 +99,7 @@ class CacheFeedImageDataUseCaseTests: XCTestCase {
      */
     
     
-    // for sync api
+    // for Sync API
     private func expect(
         _ sut: LocalFeedImageDataLoader,
         toCompleteWith expectedResult: Result<Void, Error>,

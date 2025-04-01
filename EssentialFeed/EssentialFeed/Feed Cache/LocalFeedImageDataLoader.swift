@@ -18,13 +18,13 @@ public final class LocalFeedImageDataLoader {
 
 extension LocalFeedImageDataLoader: FeedImageDataCache {
     
-    // public typealias SaveResult = Result<Void, Error> // for async api
+    // public typealias SaveResult = Result<Void, Error> // for ASync API
     
     public enum SaveError: Error {
         case failed
     }
     
-    // for sync api
+    // for Sync API
     public func save(_ data: Data, for url: URL) throws {
         do {
             try store.insert(data, for: url)
@@ -33,7 +33,7 @@ extension LocalFeedImageDataLoader: FeedImageDataCache {
         }
     }
     
-    // for async api
+    // for ASync API
     //    public func save(_ data: Data, for url: URL, completion: @escaping (SaveResult) -> Void) {
     //        store.insert(data, for: url) { [weak self] result in
     //            guard self != nil else { return }
@@ -48,7 +48,7 @@ extension LocalFeedImageDataLoader: FeedImageDataLoader {
         case failed
         case notFound
     }
-    // async api
+    // ASync API
     //    private final class LoadImageDataTask: FeedImageDataLoaderTask {
     //        private var completion: ((FeedImageDataLoader.Result) -> Void)?
     //
@@ -81,7 +81,7 @@ extension LocalFeedImageDataLoader: FeedImageDataLoader {
         throw LoadError.notFound
     }
     
-    // for async api
+    // for ASync API
     //    public func loadImageData(from url: URL, completion: @escaping (LoadResult) -> Void) -> FeedImageDataLoaderTask {
     //        let task = LoadImageDataTask(completion)
     //        store.retrieve(dataForURL: url) { [weak self] result in

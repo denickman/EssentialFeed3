@@ -51,7 +51,7 @@ class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
         })
     }
     
-    // TODO: - irrelevant for sync api
+    // TODO: - irrelevant for Sync API
     /*
     func test_loadImageDataFromURL_doesNotDeliverResultAfterCancellingTask() {
         let (sut, store) = makeSUT()
@@ -106,7 +106,7 @@ class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
     }
     
     
-    // TODO: - For Async API
+    // TODO: - For ASync API
     /*
     private func expect(_ sut: LocalFeedImageDataLoader, toCompleteWith expectedResult: FeedImageDataLoader.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for load completion")
@@ -132,7 +132,7 @@ class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
     }
      */
     
-    // For Async API
+    // For ASync API
     private func expect(
         _ sut: LocalFeedImageDataLoader,
         toCompleteWith expectedResult: Result<Data, Error>,

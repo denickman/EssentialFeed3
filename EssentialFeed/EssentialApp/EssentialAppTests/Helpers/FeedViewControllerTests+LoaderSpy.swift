@@ -16,7 +16,7 @@ extension FeedUIIntegrationTests {
         
         // MARK: - FeedImageDataLoader
         
-        private struct TaskSpy { // FeedImageDataLoaderTask // async api
+        private struct TaskSpy { // FeedImageDataLoaderTask // ASync API
             let cancelCallback: () -> Void
             func cancel() {
                 cancelCallback()
@@ -41,7 +41,7 @@ extension FeedUIIntegrationTests {
         private var feedRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
         private var loadMoreRequests = [PassthroughSubject<Paginated<FeedImage>, Error>]()
         
-        // async api
+        // ASync API
 //        private var imageRequests = [(url: URL, completion: (FeedImageDataLoader.Result) -> Void)]()
 //        
 //        func loadImageData(from url: URL, completion: @escaping (FeedImageDataLoader.Result) -> Void) -> FeedImageDataLoaderTask {

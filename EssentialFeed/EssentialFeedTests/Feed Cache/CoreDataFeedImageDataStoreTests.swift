@@ -87,6 +87,58 @@ class CoreDataFeedImageDataStoreTests: XCTestCase {
         return LocalFeedImage(id: UUID(), description: "any", location: "any", url: url)
     }
 
+    // Sync API implementation
+    
+    private func expect(
+        _ sut: CoreDataFeedStore,
+        toCompleteRetrievalWith expectedResult: FeedImageDataStore.RetrievalResult,
+        for url: URL,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        let receivedResult = Result {
+            try sut.retrieve(dataForURL: url)
+        }
+        
+        switch (receivedResult, expectedResult) {
+        case let (.success( receivedData), .success(expectedData)):
+            XCTAssertEqual(receivedData, expectedData, file: file, line: line)
+            
+        default:
+            XCTFail("Expected \(expectedResult), got \(receivedResult) instead", file: file, line: line)
+        }
+    }
+
+    private func insert(
+        _ data: Data,
+        for url: URL,
+        into sut: CoreDataFeedStore,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
+        let exp = expectation(description: "Wait for cache insertion")
+        let image = localImage(url: url)
+        
+        sut.insert([image], timestamp: Date()) { result in
+            if case let .failure(error) = result {
+                XCTFail("Failed to insert \(data) with error \(error)", file: file, line: line)
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0) // не выполнится дальше код пока не вернется exp
+        
+        do {
+            try sut.insert(data, for: url)
+        } catch {
+            XCTFail("Failed to insert \(data) with error \(error)", file: file, line: line)
+        }
+    }
+    
+    
+    // ASync API implementation
+    /*
+    
     private func expect(_ sut: CoreDataFeedStore, toCompleteRetrievalWith expectedResult: FeedImageDataStore.RetrievalResult, for url: URL,  file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for load completion")
         sut.retrieve(dataForURL: url) { receivedResult in
@@ -122,5 +174,6 @@ class CoreDataFeedImageDataStoreTests: XCTestCase {
         }
         wait(for: [exp], timeout: 1.0)
     }
+     */
 
 }

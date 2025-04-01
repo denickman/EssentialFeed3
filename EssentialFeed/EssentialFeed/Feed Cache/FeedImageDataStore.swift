@@ -13,20 +13,20 @@ public protocol FeedImageDataStore {
     typealias RetrievalResult = Swift.Result<Data?, Error>
     typealias InsertionResult = Swift.Result<Void, Error>
 
-    // async api
+    // ASync API
     @available(*, deprecated)
     func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void)
     
     @available(*, deprecated)
     func retrieve(dataForURL url: URL, completion: @escaping (RetrievalResult) -> Void)
     
-    // sync api
+    // Sync API
     func insert(_ data: Data, for url: URL) throws
     func retrieve(dataForURL url: URL) throws -> Data?
 }
 
 
-// temporary extension to not break clients since moving from async to sync api
+// temporary extension to not break clients since moving from async to Sync API
 
 public extension FeedImageDataStore {
     

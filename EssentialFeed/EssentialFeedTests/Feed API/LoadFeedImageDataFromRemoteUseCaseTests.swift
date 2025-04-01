@@ -8,7 +8,7 @@
 import XCTest
 import EssentialFeed
 
-// TODO: - Fix Tests from Async API to Sync API
+// TODO: - Fix Tests from ASync API to Sync API
 
 /*
 

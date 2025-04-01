@@ -17,15 +17,15 @@ class FeedImageDataStoreSpy: FeedImageDataStore {
 
     private(set) var receivedMessages = [Message]()
     
-    // for async api
+    // for ASync API
     private var retrievalCompletions = [(FeedImageDataStore.RetrievalResult) -> Void]()
     private var insertionCompletions = [(FeedImageDataStore.InsertionResult) -> Void]()
     
-    // for sync api
+    // for Sync API
     private var insertionResult: Result<Void, Error>?
     private var retrievalResult: Result<Data?, Error>?
 
-    // async api
+    // ASync API
     func insert(_ data: Data, for url: URL, completion: @escaping (FeedImageDataStore.InsertionResult) -> Void) {
         receivedMessages.append(.insert(data: data, for: url))
         insertionCompletions.append(completion)
@@ -37,26 +37,26 @@ class FeedImageDataStoreSpy: FeedImageDataStore {
     }
 
     func completeRetrieval(with data: Data?, at index: Int = 0) {
-//        retrievalCompletions[index](.success(data)) // async api
+//        retrievalCompletions[index](.success(data)) // ASync API
         retrievalResult = .success(data)
     }
     
     func completeRetrieval(with error: Error, at index: Int = 0) {
-//        retrievalCompletions[index](.failure(error)) // async api
+//        retrievalCompletions[index](.failure(error)) // ASync API
         retrievalResult = .failure(error)
     }
 
     func completeInsertionSuccessfully(at index: Int = 0) {
-        // insertionCompletions[index](.success(())) // async api
-        insertionResult = .success(()) // sync api
+        // insertionCompletions[index](.success(())) // ASync API
+        insertionResult = .success(()) // Sync API
     }
     
     func completeInsertion(with error: Error, at index: Int = 0) {
-       // insertionCompletions[index](.failure(error))  // async api
-        insertionResult = .failure(error) // sync api
+       // insertionCompletions[index](.failure(error))  // ASync API
+        insertionResult = .failure(error) // Sync API
     }
     
-    // sync api
+    // Sync API
     func insert(_ data: Data, for url: URL) throws {
         receivedMessages.append(.insert(data: data, for: url))
         try insertionResult?.get()
