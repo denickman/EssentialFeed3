@@ -10,7 +10,7 @@ import EssentialFeed
 
 protocol FeedImageDataLoaderTestCase: XCTestCase {}
 
-// TODO: - Fix Tests from ASync API to Sync API
+// TODO: - Fix Tests from Async API to Sync API
 /*
 extension FeedImageDataLoaderTestCase {
     func expect(_ sut: FeedImageDataLoader, toCompleteWith expectedResult: FeedImageDataLoader.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {

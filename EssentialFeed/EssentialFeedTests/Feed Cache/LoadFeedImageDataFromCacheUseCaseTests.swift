@@ -106,7 +106,7 @@ class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
     }
     
     
-    // TODO: - For ASync API
+    // TODO: - For Async API
     /*
     private func expect(_ sut: LocalFeedImageDataLoader, toCompleteWith expectedResult: FeedImageDataLoader.Result, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "Wait for load completion")
@@ -132,7 +132,7 @@ class LoadFeedImageDataFromCacheUseCaseTests: XCTestCase {
     }
      */
     
-    // For ASync API
+    // For Async API
     private func expect(
         _ sut: LocalFeedImageDataLoader,
         toCompleteWith expectedResult: Result<Data, Error>,

@@ -10,15 +10,16 @@ import Foundation
 /// FeedImageDataStore is an abstraction to hide infrastructure details (e.g. coredata) from its client (LocalFeedImageDataLoader)
 
 public protocol FeedImageDataStore {
-    typealias RetrievalResult = Swift.Result<Data?, Error>
-    typealias InsertionResult = Swift.Result<Void, Error>
-
-    // ASync API
-    @available(*, deprecated)
-    func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void)
+   // Async API
     
-    @available(*, deprecated)
-    func retrieve(dataForURL url: URL, completion: @escaping (RetrievalResult) -> Void)
+//    typealias RetrievalResult = Swift.Result<Data?, Error>
+//    typealias InsertionResult = Swift.Result<Void, Error>
+//    
+//    @available(*, deprecated)
+//    func insert(_ data: Data, for url: URL, completion: @escaping (InsertionResult) -> Void)
+//    
+//    @available(*, deprecated)
+//    func retrieve(dataForURL url: URL, completion: @escaping (RetrievalResult) -> Void)
     
     // Sync API
     func insert(_ data: Data, for url: URL) throws
@@ -27,7 +28,7 @@ public protocol FeedImageDataStore {
 
 
 // temporary extension to not break clients since moving from async to Sync API
-
+/*
 public extension FeedImageDataStore {
     
     func insert(_ data: Data, for url: URL) throws {
@@ -70,3 +71,4 @@ public extension FeedImageDataStore {
         
     }
 }
+*/

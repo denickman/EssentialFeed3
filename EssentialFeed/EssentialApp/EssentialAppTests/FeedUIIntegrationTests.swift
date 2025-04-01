@@ -160,7 +160,7 @@ class FeedUIIntegrationTests: XCTestCase {
         XCTAssertEqual(sut.errorMessage, nil)
     }
     
-    // TODO: - Test Old ASync API to Sync API
+    // TODO: - Test Old Async API to Sync API
     /*
     func test_feedImageView_loadsImageURLWhenVisible() {
         let image0 = makeImage(url: URL(string: "http://url-0.com")!)
@@ -559,7 +559,7 @@ class FeedUIIntegrationTests: XCTestCase {
         sut.loadViewIfNeeded()
         loader.completeFeedLoading(with: [image])
         
-        // TODO: - Test OLD ASync API to Sync API
+        // TODO: - Test OLD Async API to Sync API
         
 //        sut.simulateFeedImageViewNearVisible(at: 0)
 //        XCTAssertEqual(loader.loadedImageURLs, [image.url], "Expected first request when near visible")

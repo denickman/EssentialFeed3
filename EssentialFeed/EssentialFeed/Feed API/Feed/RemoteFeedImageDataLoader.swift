@@ -14,7 +14,7 @@ public final class RemoteFeedImageDataLoader: FeedImageDataLoader {
     }
     
     
-    // ASync API
+    // Async API
     
 //    public enum Error: Swift.Error {
 //        case connectivity

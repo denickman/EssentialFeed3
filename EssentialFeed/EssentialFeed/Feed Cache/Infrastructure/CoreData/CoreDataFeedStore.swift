@@ -41,7 +41,7 @@ public final class CoreDataFeedStore {
         return try result.get()
     }
     
-    // For ASync API
+    // For Async API
     func performAsync(_ action: @escaping (NSManagedObjectContext) -> Void) {
         /// Обеспечивает безопасность потоков, так как NSManagedObjectContext нельзя использовать в другом потоке напрямую
         ///  Избегает блокировок основного потока, так как все операции выполняются в фоновом контексте
