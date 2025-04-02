@@ -31,7 +31,9 @@ public final class FeedUIComposer {
         
         let feedViewAdapter = FeedViewAdapter(
             controller: feedController,
-            imageLoader: { imageLoader($0).dispatchOnMainQueue() },
+            imageLoader: {
+                imageLoader($0).dispatchOnMainQueue()
+            },
             selection: selection
         )
         

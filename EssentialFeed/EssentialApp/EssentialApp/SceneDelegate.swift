@@ -23,9 +23,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
     private lazy var baseURL = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed")!
-    
     private lazy var logger = Logger(subsystem: "com.yaremenko.denis.Essential", category: "main") // main module
     
+    // for not thread-safe operations & components
+    private lazy var serialScheduler = DispatchQueue(label: "com.essentialdeveloper.infra.queue", qos: .userInitiated)
+    
+    // for thread-safe operations & components
+    private lazy var concurrentScheduler = DispatchQueue(label: "com.essentialdeveloper.infra.queue", qos: .userInitiated, attributes: .concurrent)
+    
+    // Custom AnyScheduler type
+    private lazy var customScheduler: AnyDispatchQueueScheduler = DispatchQueue(label: "com.essentialdeveloper.infra.queue", qos: .userInitiated, attributes: .concurrent).eraseToAnyScheduler()
+
+        
     private lazy var navigationController = UINavigationController(
         rootViewController: FeedUIComposer.feedComposedWith(
             feedLoader: makeRemoteFeedLoaderWithLocalFallback,
@@ -55,12 +64,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }()
     
     // MARK: - Init
-    
-    convenience init(httpClient: HTTPClient, store: FeedStore & FeedImageDataStore) {
+#if DEBUG
+    convenience init(
+        httpClient: HTTPClient,
+        store: FeedStore & FeedImageDataStore,
+        scheduler: AnyDispatchQueueScheduler
+    ) {
         self.init()
         self.httpClient = httpClient
         self.store = store
+        self.customScheduler = scheduler
     }
+#endif
     
     // MARK: - Lifecycle
     
@@ -151,17 +166,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //let remoteImageLoader = RemoteFeedImageDataLoader(client: httpClient)
         let localImageLoader = LocalFeedImageDataLoader(store: store)
         
+        
+        // if your component is not thread-safe you need always execture operation in a serial queue (scheduler)
         return localImageLoader
             .loadImageDataPublisher(from: url)
             .logCacheMisses(url: url, logger: logger)
-            .fallback(to: { [httpClient, logger] in
+            .fallback(to: { [httpClient, logger, customScheduler] in
                 return httpClient
                     .getPublisher(url: url)
                     .logErrors(url: url, logger: logger)
                     .logElapsedTime(url: url, logger: logger)
                     .tryMap(FeedImageDataMapper.map)
                     .caching(to: localImageLoader, using: url)
+                    .subscribe(on: customScheduler)
+                    .eraseToAnyPublisher()
             })
+            // in order to not block MainQueue we subsribe localImageLoader results on another queue
+            //.subscribe(on: DispatchQueue.global()) // concurrentQueue
+            //.subscribe(on: serialScheduler) // serial Queue
+            .subscribe(on: customScheduler) // concurrent Queue
+           // no need to add  .receive(on: DispatchQueue.main) because PresentationAdapter already swith to MainQueue
+            .eraseToAnyPublisher()
     }
     
     private func showComments(for image: FeedImage) {
@@ -179,7 +204,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 }
-
 
 extension Publisher {
     

@@ -188,3 +188,64 @@ extension DispatchQueue {
 }
 
 
+// craate own anyscheduler type erasure
+
+typealias AnyDispatchQueueScheduler = AnyScheduler<DispatchQueue.SchedulerTimeType, DispatchQueue.SchedulerOptions>
+
+// "стирает" конкретный тип реализации, предоставляя единый интерфейс для работы с любым объектом, соответствующим протоколу Scheduler.
+struct AnyScheduler<SchedulerTimeType: Strideable, SchedulerOptions>: Scheduler
+where SchedulerTimeType.Stride: SchedulerTimeIntervalConvertible {
+    
+/// SchedulerTimeType: Strideable — тип, представляющий "время" планировщика (например, DispatchQueue.SchedulerTimeType). Он должен поддерживать операции шага (stride), чтобы можно было задавать интервалы.
+    ///
+/// SchedulerOptions — тип опций планировщика (например, DispatchQueue.SchedulerOptions).
+    ///
+/// Ограничение: SchedulerTimeType.Stride: SchedulerTimeIntervalConvertible — шаг времени должен быть конвертируемым в интервал (это требование протокола Scheduler из Combine).
+    ///
+    private let _now: () -> SchedulerTimeType //  текущее время планировщика.
+    private let _minimumTolerance: () -> SchedulerTimeType.Stride // минимальную допустимую погрешность.
+    private let _schedule: (SchedulerOptions?, @escaping () -> Void) -> Void // немедленного выполнения действия
+    private let _schedulerAfter: (SchedulerTimeType, SchedulerTimeType.Stride, SchedulerOptions?, @escaping () -> Void) -> Void // для планирования действия после определённого времени.
+    private let _schedulerAfterInterval: (SchedulerTimeType, SchedulerTimeType.Stride, SchedulerTimeType.Stride, SchedulerOptions?, @escaping () -> Void) -> Cancellable // для планирования повторяющихся действий с интервалом
+
+    var now: SchedulerTimeType {
+        _now()
+    }
+    
+    var minimumTolerance: SchedulerTimeType.Stride {
+        _minimumTolerance()
+    }
+    
+    init<S>(_ scheduler: S) where SchedulerTimeType == S.SchedulerTimeType,
+    SchedulerOptions == S.SchedulerOptions, S: Scheduler {
+        _now = { scheduler.now }
+        _minimumTolerance = { scheduler.minimumTolerance }
+        _schedule = scheduler.schedule(options:_:)
+        _schedulerAfter = scheduler.schedule(after:tolerance:options:_:)
+        _schedulerAfterInterval = scheduler.schedule(after:interval:tolerance:options:_:)
+    }
+    
+    func schedule(options: SchedulerOptions?, _ action: @escaping () -> Void) {
+        _schedule(options, action)
+    }
+    
+    func schedule(after date: SchedulerTimeType, tolerance: SchedulerTimeType.Stride, options: SchedulerOptions?, _ action: @escaping () -> Void) {
+        _schedulerAfter(date, tolerance, options, action)
+    }
+    
+    func schedule(after date: SchedulerTimeType, interval: SchedulerTimeType.Stride, tolerance: SchedulerTimeType.Stride, options: SchedulerOptions?, _ action: @escaping () -> Void) -> any Cancellable {
+        _schedulerAfterInterval(date, interval, tolerance, options, action)
+    }
+}
+
+extension AnyDispatchQueueScheduler {
+    static var immediateOnMainQueue: Self {
+        DispatchQueue.immediateWhenOnMainQueueScheduler.eraseToAnyScheduler()
+    }
+}
+
+extension Scheduler {
+    func eraseToAnyScheduler() -> AnyScheduler<SchedulerTimeType, SchedulerOptions> {
+        AnyScheduler(self)
+    }
+}

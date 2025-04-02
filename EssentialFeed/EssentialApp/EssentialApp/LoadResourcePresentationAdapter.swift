@@ -43,7 +43,7 @@ final class LoadResourcePresentationAdapter<Resource, View: ResourceView> {
             .handleEvents(receiveCancel: { [weak self] in
                 self?.isLoading = false // if we cancel the loading process set isLoading to false
             })
-            .sink { [weak self] completion in
+            .sink { [weak self] completion in //sink происходят на главном потоке благодаря .dispatchOnMainQueue().
                 switch completion {
                 case .finished:
                     break
